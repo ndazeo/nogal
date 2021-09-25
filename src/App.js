@@ -1,11 +1,11 @@
 import './App.css';
-import Frame from './Components/frame';
-
+import Tagger from './Screens/tagger.js';
 
 function App() {
+  
   return (
     <div className="App">
-      <Frame />
+      <Tagger />
     </div>
   );
 }

@@ -13,4 +13,37 @@ const getFrame = async(fileid,f) => {
     return blob
 }
 
-export {getFrame}
+const getPatients = async() => {
+    const response = await fetch(`${URL}patients`,{
+        method: 'GET',
+        headers: {
+        'Authorization': `Bearer ${jwt}`
+        }
+    })
+    const data = await response.json()
+    return data
+}
+
+const getPatient = async(id) => {
+    const response = await fetch(`${URL}patients/${id}`,{
+        method: 'GET',
+        headers: {
+        'Authorization': `Bearer ${jwt}`
+        }
+    })
+    const data = await response.json()
+    return data
+}
+
+const getSerie = async(id) => {
+    const response = await fetch(`${URL}series/${id}`,{
+        method: 'GET',
+        headers: {
+        'Authorization': `Bearer ${jwt}`
+        }
+    })
+    const data = await response.json()
+    return data
+}
+
+export {getFrame, getPatients, getPatient, getSerie}

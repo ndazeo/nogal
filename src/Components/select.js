@@ -1,0 +1,65 @@
+import React from 'react';
+import {getPatients, getPatient, getSerie} from '../model/api';
+import './select.css'
+
+const Select = (props) => { 
+    const [patients, setPatients] = React.useState([]);
+    const [series, setSeries] = React.useState([]);
+    const {serie, patient, onSerieSelected, onPatientSelected} = props;
+
+    React.useEffect(() => {
+        getPatients().then(setPatients);
+    }, []);
+
+    React.useEffect(() => {
+        if (patient) {
+            patient.series.map( id =>
+                getSerie(id).then(serie => setSeries(series => [...series, serie]))
+            )
+        }
+    }, [patient]);
+
+    const handlePatientChange = (event) => {
+        getPatient(event.target.value).then(onPatientSelected);
+        setSeries([]);
+    };
+
+    const handleSerieChange = (event) => {
+        event.preventDefault();
+        getSerie(event.target.dataset.id).then(onSerieSelected);
+    };
+    
+    return (
+        <div className="selectForm">
+            <div>
+                <label htmlFor="select">Patient </label>
+                <select class="box" value={patient?patient._id:null} onChange={handlePatientChange}>
+                    <option value="">Select a patient</option>
+                    { patients
+                        .sort((a,b) => a.name>b.name)
+                        .map(ipatient => 
+                            <option value={ipatient._id}>
+                                {ipatient.name}
+                            </option>
+                        ) }
+                </select>
+            </div>
+            <label htmlFor="select">Serie</label>
+            <div className="seriesContainer">    
+                <div className="seriesList">
+                    <ul>
+                        { series
+                            .sort((a,b) => a.name>b.name)
+                            .map(iserie =>
+                                <li className={serie&&serie._id==iserie._id?"selectedSerie":null}>
+                                    <a href={iserie._id} data-id={iserie._id} onClick={handleSerieChange}>{iserie.name}</a>
+                                </li>
+                        )  }
+                    </ul>
+                </div>
+            </div>
+        </div>
+    );
+};
+
+export default Select;

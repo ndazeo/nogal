@@ -1,40 +1,63 @@
-import React, { useRef, useEffect } from 'react'
+import React, { useRef, useEffect, useState } from 'react'
+import useEventListener from '@use-it/event-listener'
 import './frame.css'
-import {getFrame} from '../model/api'
-
-const file = 'data%2Fcln006%2FSeries%20006%20%5BXA%20-%20CAR%20INT%20DER%5D%2F1.3.6.1.4.1.5962.99.1.2860635706.1294370719.1450264647226.7334.0.dcm'
+import { getFrame } from '../model/api'
 
 
 const Frame = (props) => {
     const canvasRef = useRef(null);
-    
-    const drawMarker = (ctx, x,y) => {
+    const [blob, setBlob] = useState(null)
+    const { serie, frame, onClick } = props
 
+    const drawMarker = (ctx, x, y) => {
+        x = x * ctx.canvas.width
+        y = y * ctx.canvas.height
+        ctx.beginPath();
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "green";
+        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.stroke();
     }
 
-    const renderBlob = (ctx, blob) => {
-        const img = new Image()
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        if (!serie || !blob) return
+        const img = new Image();
         img.onload = (event) => {
             URL.revokeObjectURL(event.target.src) // 👈 This is important. If you are not using the blob, you should release it if you don't want to reuse it. It's good for memory.
             ctx.drawImage(event.target, 0, 0, ctx.canvas.width, ctx.canvas.height)
+            const [x, y] = [event.target.width, event.target.height]
+            serie.tags.filter(tag => tag.f === frame).forEach(tag => {
+                drawMarker(ctx, tag.x / x, tag.y / y)
+            })
         }
         img.src = URL.createObjectURL(blob)
-    }
+    }, [blob, canvasRef, serie, frame])
 
-    const draw = async(ctx) => {
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        const blob = await getFrame(file, 0)
-        renderBlob(ctx,blob)
-      }
 
     useEffect(() => {
+        if (serie) {
+            const file = serie.files
+                .filter(file => file.f <= frame)
+                .reduce((acc, file) => (acc && acc.f > file.f) ? acc : file, null)
+            getFrame(file.path, frame - file.f).then(setBlob)
+        }
+    }, [serie, frame])
+
+
+    useEventListener('click', (event) => {
         const canvas = canvasRef.current
-        const context = canvas.getContext('2d')
-        draw(context)
-      }, [])
+        const rect = canvas.getBoundingClientRect()
+        const x = (event.clientX - rect.left) / rect.width
+        const y = (event.clientY - rect.top) / rect.height
+        onClick(x, y)
+    }, canvasRef.current)
+
 
     return (
-        <canvas className="canvas" ref={canvasRef} {...props}/>
+        <canvas className="canvas" ref={canvasRef} {...props} width="1000" height="1000" />
     )
 }
 

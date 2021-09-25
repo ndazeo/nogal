@@ -1,0 +1,22 @@
+.Tagger {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+
+.MainTab {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.MainTab > div {
+  flex: 1;
+}
+
+.MainFrame {
+  margin-right: 10%;
+}
