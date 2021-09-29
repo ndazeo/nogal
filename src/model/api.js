@@ -46,4 +46,53 @@ const getSerie = async(id) => {
     return data
 }
 
-export {getFrame, getPatients, getPatient, getSerie}
+const getTags = async() => {
+    const response = await fetch(`${URL}tags`,{
+        method: 'GET',
+        headers: {
+            'Authorization': `Bearer ${jwt}`
+            }
+        })
+        const data = await response.json()
+        return data
+}
+
+const addTag = async(id,tag) => {
+    const response = await fetch(`${URL}series/${id}/tags`,{
+        method: 'POST',
+        headers: {
+            'Authorization': `Bearer ${jwt}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tag)
+    })
+    const data = await response.json()
+    return {'status': response.status, 'serie': data}
+}
+
+const updateTag = async(id,i, tag) => {
+    const response = await fetch(`${URL}series/${id}/tags/${i}`,{
+        method: 'PUT',
+        headers: {
+            'Authorization': `Bearer ${jwt}`,
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(tag)
+    })
+    const data = await response.json()
+    return {'status': response.status, 'serie': data}
+}
+
+const deleteTag = async(id,x,y,f) => {
+    const response = await fetch(`${URL}series/${id}/tags?x=${x}&y=${y}&f=${f}`,{
+        method: 'DELETE',
+        headers: {
+            'Authorization': `Bearer ${jwt}`,
+            'Content-Type': 'application/json'
+        }
+    })
+    const data = await response.json()
+    return {'status': response.status, 'serie': data}
+}
+
+export {getFrame, getPatients, getPatient, getSerie, getTags, addTag, updateTag, deleteTag}

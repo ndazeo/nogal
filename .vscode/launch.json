@@ -10,7 +10,17 @@
             "name": "Launch Program",
             "url": "http://localhost:3000",
             "webRoot": "${workspaceFolder}",
-            "reAttach": true
+            "reAttach": true,
+            "pathMappings": [
+                {
+                    "url": "file:///C:/Users/nico/Documents/projects/ANKloud/web_client/src",
+                    "path": "${workspaceFolder}/src"
+                },
+                {
+                    "url": "file:///C:/Users/nico/Documents/projects/ANKloud/web_client/src",
+                    "path": "${workspaceFolder}/src"
+                }
+            ]
         }
     ]
 }

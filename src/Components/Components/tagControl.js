@@ -17,7 +17,7 @@ const TagControl = (props) => {
     React.useEffect(() => {
         if (props.serie && props.serie.tags)
             setUsedTags(props.serie.tags.reduce(
-                (r, i) => !r.find(e => e.n === i.type.n) ? [i.type, ...r] : r, []
+                (r, i) => !r.find(e => e.n===i.type.n)? [i.type,...r]:r, []
             ));
         else
             setUsedTags([]);

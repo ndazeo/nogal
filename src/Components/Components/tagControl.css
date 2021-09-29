@@ -1,0 +1,12 @@
+.tagsList ul {
+   list-style: none;
+}
+
+.tagsList a:link, .tagsList a:visited {
+   color: whitesmoke;
+   text-decoration: none;
+}
+
+.selectedTag {
+   text-decoration: underline;
+}

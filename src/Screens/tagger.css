@@ -13,10 +13,22 @@
   flex: 1;
 }
 
-.MainTab > div {
+.MainTab>div {
   flex: 1;
 }
 
 .MainFrame {
   margin-right: 10%;
+}
+
+.cursor-add {
+  cursor: crosshair;
+}
+
+.cursor-delete {
+  cursor: url('../res/delete.png') 8 8, auto;
+}
+
+.cursor-move {
+  cursor: move;
 }
