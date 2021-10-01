@@ -1,14 +1,13 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import useEventListener from '@use-it/event-listener'
 import './frame.css'
-import { getFrame } from '../model/api'
 import bspline from 'b-spline'
 
 
 const Frame = (props) => {
     const canvasRef = useRef(null);
     const [blob, setBlob] = useState(null)
-    const { serie, tags, frame, onFrameMouseDown, onFrameMouseUp, onFrameMouseMove } = props
+    const { serie, tags, frame, api, onFrameMouseDown, onFrameMouseUp, onFrameMouseMove } = props
 
     const drawMarker = useCallback((ctx, x, y, color) => {
         x = x * ctx.canvas.width
@@ -61,9 +60,9 @@ const Frame = (props) => {
             const file = serie.files
                 .filter(file => file.f <= frame)
                 .reduce((acc, file) => (acc && acc.f > file.f) ? acc : file, null)
-            getFrame(file.path, frame - file.f).then(setBlob)
+            api.getFrame(file.path, frame - file.f).then(setBlob)
         }
-    }, [serie, frame])
+    }, [serie, frame, api])
 
     useEventListener('mouseup', (event) => {
         const canvas = canvasRef.current

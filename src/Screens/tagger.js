@@ -4,12 +4,11 @@ import Frame from '../Components/frame';
 import Select from '../Components/select';
 import TagControl from '../Components/tagControl';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
-import { addTag, updateTag, deleteTag } from '../model/api';
 import 'react-tabs/style/react-tabs.css';
 import './tagger.css';
 
 
-function Tagger() {
+const Tagger = (props) => {
   const [patient, setPatient] = useState(null);
   const [serie, setSerie] = useState(null);
   const [frame, setFrame] = useState(null);
@@ -18,6 +17,7 @@ function Tagger() {
   const [cursorClass, setCursorClass] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
   const [tags, setTags] = useState([]);
+  const {api} = props
 
   useEventListener('keydown', (key) => {
     if (!serie) return;
@@ -48,19 +48,19 @@ function Tagger() {
 
   const onFrameMouseUp = (x, y) => {
     if (tagMode === "delete") {
-      deleteTag(serie._id, x, y, frame).then(({ status, serie }) => status === 200 && setSerie(serie));
-    } else if (tagMode === "move" && selectedTag!==null) {
+      api.deleteTag(serie._id, x, y, frame).then(({ status, serie }) => status === 200 && setSerie(serie));
+    } else if (tagMode === "move" && selectedTag !== null) {
       const tagElem = tags[selectedTag]
       tagElem['x'] = x
       tagElem['y'] = y
-      updateTag(serie._id, selectedTag, tagElem).then(({ status, serie }) => status === 200 && setSerie(serie));
+      api.updateTag(serie._id, selectedTag, tagElem).then(({ status, serie }) => status === 200 && setSerie(serie));
       setSelectedTag(null);
     } else if (tagMode === "add" && currentTag) {
       const tagElem = { 'x': x, 'y': y, 'f': frame, 'type': currentTag };
       if (currentTag.l) {
         tagElem['i'] = serie.tags.filter(t => t.type.n === currentTag.n).length;
       }
-      addTag(serie._id, tagElem).then(({ status, serie }) => status === 201 && setSerie(serie));
+      api.addTag(serie._id, tagElem).then(({ status, serie }) => status === 201 && setSerie(serie));
     }
   }
 
@@ -72,11 +72,11 @@ function Tagger() {
   }
 
   const onFrameMouseMove = (x, y) => {
-    if (tagMode === "move" && selectedTag!==null) {
+    if (tagMode === "move" && selectedTag !== null) {
       let t = tags[selectedTag]
       t['x'] = x
       t['y'] = y
-      setTags(tags => [...tags, selectedTag=>t]);
+      setTags(tags => [...tags, selectedTag => t]);
     }
   }
 
@@ -110,14 +110,17 @@ function Tagger() {
           </Tab>
         </TabList>
         <TabPanel>
-          <Select serie={serie} patient={patient} onPatientSelected={setPatient} onSerieSelected={handleSerieSelected} />
+          <Select serie={serie} patient={patient} api={api}
+            onPatientSelected={setPatient}
+            onSerieSelected={handleSerieSelected} />
         </TabPanel>
         <TabPanel>
-          <TagControl serie={serie} frame={frame} setTag={setCurrentTag} currentTag={currentTag} />
+          <TagControl serie={serie} frame={frame} api={api}
+            setTag={setCurrentTag} currentTag={currentTag} />
         </TabPanel>
       </Tabs>
-      <Frame className={"MainFrame " + cursorClass} 
-        serie={serie} tags={tags} frame={frame}
+      <Frame className={"MainFrame " + cursorClass}
+        serie={serie} tags={tags} frame={frame} api={api}
         onFrameMouseDown={onFrameMouseDown}
         onFrameMouseUp={onFrameMouseUp}
         onFrameMouseMove={onFrameMouseMove}
