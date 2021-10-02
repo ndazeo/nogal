@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { useAPI } from '../Services/api'
 import './tagControl.css'
 
 const isInt = (value) => parseInt(value, 10) === value;
@@ -8,12 +7,11 @@ const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
     const [tags, setTags] = useState([]);
 
-    const { setTag, currentTag } = props;
-    const { getTags } = useAPI(props.token)
-
+    const { setTag, api, currentTag } = props;
+    
     React.useEffect(() => {
-        getTags().then(setTags);
-    }, [getTags]);
+        api.getTags().then(setTags);
+    }, [api]);
 
     React.useEffect(() => {
         if (props.serie && props.serie.tags)
