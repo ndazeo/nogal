@@ -4,4 +4,4 @@ deploy:
     - npm build
     - cp ./build/* -r /deep/ndazeo/nogal/public/
   only:
-    - master
+    - main
