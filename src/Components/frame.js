@@ -1,13 +1,21 @@
 import React, { useRef, useEffect, useState, useCallback } from 'react'
 import useEventListener from '@use-it/event-listener'
 import './frame.css'
-import bspline from 'b-spline'
 
 
 const Frame = (props) => {
     const canvasRef = useRef(null);
     const [blob, setBlob] = useState(null)
-    const { serie, tags, frame, api, onFrameMouseDown, onFrameMouseUp, onFrameMouseMove } = props
+    const [tagsDict, setTagsDict] = useState({})
+    const [image, setImage] = useState(null)
+    const {
+        serie, serieTags, tags, frame, api,
+        onFrameMouseDown, onFrameMouseUp, onFrameMouseMove
+    } = props
+
+    useEffect(() => {
+        if (tags) setTagsDict(tags.reduce((acc, tag) => ({ [tag._id]: tag, ...acc }), {}))
+    }, [tags])
 
     const drawMarker = useCallback((ctx, x, y, color) => {
         x = x * ctx.canvas.width
@@ -19,18 +27,16 @@ const Frame = (props) => {
         ctx.stroke();
     }, [])
 
-    const drawSpline = useCallback((ctx, tags, color) => {
-        if (tags.length > 2) {
+    const drawLine = useCallback((ctx, tags, color) => {
+        if (tags.length > 1) {
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = color || "red";
-            const degree = 2
-            const { w, h } = { 'w': ctx.canvas.width, 'h': ctx.canvas.height }
-            const points = tags.sort((a, b) => a.i > b.i).map(tag => [tag.x * w, tag.y * h])
-            const knots = [0, 0, ...Array(tags.length - 1).keys(), tags.length - 2, tags.length - 2]
-            ctx.moveTo(...bspline(0, degree, points, knots));
-            for (var t = 0; t < 1; t += 0.01) {
-                ctx.lineTo(...bspline(t, degree, points, knots));
+            const [w, h] = [ctx.canvas.width, ctx.canvas.height]
+            const points = tags.sort((a, b) => a.i > b.i)
+            ctx.moveTo(points[0].x * w, points[0].y * h);
+            for (var t = 0; t < points.length; t++) {
+                ctx.lineTo(points[t].x * w, points[t].y * h);
             }
             ctx.stroke();
         }
@@ -40,20 +46,35 @@ const Frame = (props) => {
     }, [drawMarker])
 
     useEffect(() => {
-        const canvas = canvasRef.current;
-        const ctx = canvas.getContext('2d');
-        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        if (!tags || !blob) return
+        if(!blob) {
+            setImage(null)
+            return
+        }
         const img = new Image();
         img.onload = (event) => {
             URL.revokeObjectURL(event.target.src) // 👈 This is important. If you are not using the blob, you should release it if you don't want to reuse it. It's good for memory.
-            ctx.drawImage(event.target, 0, 0, ctx.canvas.width, ctx.canvas.height)
-            const ftags = tags.filter(tag => tag.f === frame)
-            ftags.filter(tag => !tag.type.l).forEach(tag => drawMarker(ctx, tag.x, tag.y))
-            drawSpline(ctx, ftags.filter(tag => tag.type.l))
+            setImage(event.target)
         }
         img.src = URL.createObjectURL(blob)
-    }, [blob, canvasRef, frame, drawMarker, drawSpline, tags])
+    }, [blob])
+
+    useEffect(() => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
+        if (!serieTags || !image) return
+        ctx.drawImage(image, 0, 0, ctx.canvas.width, ctx.canvas.height)
+        const ftags = serieTags.filter(tag => tag.f === frame)
+        const availTags = ftags.reduce((acc, tag) => ({ ...acc, [tag.k]: tagsDict[tag.k] }), {})
+        Object.entries(availTags).forEach(([key, kind],) => {
+            const ktags = ftags.filter(tag => tag.k === key)
+            if (kind.l === 1) {
+                drawLine(ctx, ktags)
+            } else {
+                ktags.forEach(tag => drawMarker(ctx, tag.x, tag.y))
+            }
+        })
+    }, [image, canvasRef, frame, drawMarker, drawLine, serieTags, tagsDict])
 
     useEffect(() => {
         if (serie) {

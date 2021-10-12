@@ -89,7 +89,7 @@ const useAPI = (props) => {
                 body: JSON.stringify(tag)
             })
             const data = await response.json()
-            return { 'status': response.status, 'serie': data }
+            return { 'status': response.status, 'result': data }
         },
     updateTag: async (id, i, tag) => {
             const response = await fetch(`${URL}series/${id}/tags/${i}`, {
@@ -101,7 +101,7 @@ const useAPI = (props) => {
                 body: JSON.stringify(tag)
             })
             const data = await response.json()
-            return { 'status': response.status, 'serie': data }
+            return { 'status': response.status, 'result': data }
         },
     deleteTag: async (id, x, y, f) => {
             const response = await fetch(`${URL}series/${id}/tags?x=${x}&y=${y}&f=${f}`, {
@@ -112,7 +112,7 @@ const useAPI = (props) => {
                 }
             })
             const data = await response.json()
-            return { 'status': response.status, 'serie': data }
+            return { 'status': response.status, 'result': data }
         }
     }
 }

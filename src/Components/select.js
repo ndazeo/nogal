@@ -3,24 +3,14 @@ import './select.css'
 
 const Select = (props) => {
     const [patients, setPatients] = React.useState([]);
-    const [series, setSeries] = React.useState({});
     const { serie, patient, api, onSerieSelected, onPatientSelected } = props;
 
     React.useEffect(() => {
         api.getPatients().then(setPatients);
     }, [api]);
 
-    React.useEffect(() => {
-        if (patient) {
-            patient.series.map(id =>
-                api.getSerie(id).then(serie => setSeries(series => ({...series, [id]: serie})))
-            )
-        }
-    }, [patient, api]);
-
     const handlePatientChange = (event) => {
         api.getPatient(event.target.value).then(onPatientSelected);
-        setSeries({});
     };
 
     const handleSerieChange = (event) => {
@@ -47,8 +37,7 @@ const Select = (props) => {
             <div className="seriesContainer">
                 <div className="seriesList">
                     <ul>
-                        {Object.entries(series)
-                            .map(([,v]) => v)
+                        {patient && patient.series && patient.series
                             .sort((a, b) => a.name > b.name)
                             .map(iserie =>
                                 <li className={serie && serie._id === iserie._id ? "selectedSerie" : null}>

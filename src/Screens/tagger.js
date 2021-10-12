@@ -13,11 +13,17 @@ const Tagger = (props) => {
   const [serie, setSerie] = useState(null);
   const [frame, setFrame] = useState(null);
   const [currentTag, setCurrentTag] = useState(null);
-  const [tagMode, setTagMode] = useState(false);
+  const [tagMode, setTagMode] = useState("add");
   const [cursorClass, setCursorClass] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
+  const [serieTags, setSerieTags] = useState([]);
   const [tags, setTags] = useState([]);
-  const {api} = props
+  const { api } = props
+
+
+  useEffect(() => {
+    api.getTags().then(setTags);
+  }, [api]);
 
   useEventListener('keydown', (key) => {
     if (!serie) return;
@@ -48,35 +54,35 @@ const Tagger = (props) => {
 
   const onFrameMouseUp = (x, y) => {
     if (tagMode === "delete") {
-      api.deleteTag(serie._id, x, y, frame).then(({ status, serie }) => status === 200 && setSerie(serie));
+      api.deleteTag(serie._id, x, y, frame).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
     } else if (tagMode === "move" && selectedTag !== null) {
-      const tagElem = tags[selectedTag]
+      const tagElem = serieTags[selectedTag]
       tagElem['x'] = x
       tagElem['y'] = y
-      api.updateTag(serie._id, selectedTag, tagElem).then(({ status, serie }) => status === 200 && setSerie(serie));
+      api.updateTag(serie._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
       setSelectedTag(null);
     } else if (tagMode === "add" && currentTag) {
-      const tagElem = { 'x': x, 'y': y, 'f': frame, 'type': currentTag };
+      const tagElem = { 'x': x, 'y': y, 'f': frame, 'k': currentTag._id };
       if (currentTag.l) {
-        tagElem['i'] = serie.tags.filter(t => t.type.n === currentTag.n).length;
+        tagElem['i'] = serieTags.filter(t => t.k === currentTag._id).length;
       }
-      api.addTag(serie._id, tagElem).then(({ status, serie }) => status === 201 && setSerie(serie));
+      api.addTag(serie._id, tagElem).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
     }
   }
 
   const onFrameMouseDown = (x, y) => {
     if (tagMode === "move") {
-      const i = serie.tags.findIndex(t => x - 0.005 < t.x && t.x < x + 0.005 && y - 0.005 < t.y && t.y < y + 0.005 && t.f === frame);
+      const i = serieTags.findIndex(t => x - 0.005 < t.x && t.x < x + 0.005 && y - 0.005 < t.y && t.y < y + 0.005 && t.f === frame);
       setSelectedTag(i < 0 ? null : i);
     }
   }
 
   const onFrameMouseMove = (x, y) => {
     if (tagMode === "move" && selectedTag !== null) {
-      let t = tags[selectedTag]
+      let t = serieTags[selectedTag]
       t['x'] = x
       t['y'] = y
-      setTags(tags => [...tags, selectedTag => t]);
+      setSerieTags(serieTags => [...serieTags, selectedTag => t]);
     }
   }
 
@@ -94,7 +100,7 @@ const Tagger = (props) => {
 
   useEffect(() => {
     if (serie) {
-      setTags(serie.tags);
+      setSerieTags(serie.tags);
     }
   }, [serie]);
 
@@ -115,12 +121,12 @@ const Tagger = (props) => {
             onSerieSelected={handleSerieSelected} />
         </TabPanel>
         <TabPanel>
-          <TagControl serie={serie} frame={frame} api={api}
+          <TagControl serie={serie} frame={frame} tags={tags}
             setTag={setCurrentTag} currentTag={currentTag} />
         </TabPanel>
       </Tabs>
-      <Frame className={"MainFrame " + cursorClass}
-        serie={serie} tags={tags} frame={frame} api={api}
+      <Frame className={"MainFrame " + cursorClass} tags={tags}
+        serie={serie} serieTags={serieTags} frame={frame} api={api}
         onFrameMouseDown={onFrameMouseDown}
         onFrameMouseUp={onFrameMouseUp}
         onFrameMouseMove={onFrameMouseMove}
