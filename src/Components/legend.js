@@ -13,7 +13,7 @@ const Legend = () => {
         <div className="legend">
             <a href="#" onClick={toggleHidden} class="helpicon">?</a>
             <div className={"legend-frame " + (hidden?"hidden":"")}>
-                <h2>Tools:</h2>
+                <h2>Help:</h2>
                 <p></p>
                 <p>Click to add.</p>
                 <p>Keep Ctrl pressed to delete.</p>
