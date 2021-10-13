@@ -3,6 +3,7 @@ import useEventListener from '@use-it/event-listener'
 import Frame from '../Components/frame';
 import Select from '../Components/select';
 import TagControl from '../Components/tagControl';
+import Legend from '../Components/legend';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import './tagger.css';
@@ -38,6 +39,20 @@ const Tagger = (props) => {
     }
     if (key.key === 'Shift') {
       setTagMode("move");
+    }
+    if (key.key === 'Escape') {
+      setSelectedTag(null);
+    }
+    if (key.key === 'C' && frame > 0) {
+      api.deleteTag(serie._id, frame=frame).then(({ status, result }) => {
+        if (status === 200) {
+          result.tags
+            .filter(tag => tag.f === frame-1)
+            .forEach(tag => // TODO: implement addMany
+              api.addTag(serie._id, {...tag, f: frame}).then(({ status, result }) => status === 201 && setSerieTags(result.tags))            
+            );
+        }
+      });
     }
   });
 
@@ -131,6 +146,7 @@ const Tagger = (props) => {
         onFrameMouseUp={onFrameMouseUp}
         onFrameMouseMove={onFrameMouseMove}
       />
+      <Legend />
     </div>
   );
 }
