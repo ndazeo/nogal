@@ -17,13 +17,13 @@ const Frame = (props) => {
         if (tags) setTagsDict(tags.reduce((acc, tag) => ({ [tag._id]: tag, ...acc }), {}))
     }, [tags])
 
-    const drawMarker = useCallback((ctx, x, y, color) => {
+    const drawMarker = useCallback((ctx, x, y, color, rad) => {
         x = x * ctx.canvas.width
         y = y * ctx.canvas.height
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.strokeStyle = color || "green";
-        ctx.arc(x, y, 8, 0, 2 * Math.PI);
+        ctx.arc(x, y, rad||8, 0, 2 * Math.PI);
         ctx.stroke();
     }, [])
 
@@ -41,7 +41,7 @@ const Frame = (props) => {
             ctx.stroke();
         }
         tags.forEach(point => {
-            drawMarker(ctx, point.x, point.y, color || "red")
+            drawMarker(ctx, point.x, point.y, color || "red", 3)
         })
     }, [drawMarker])
 
@@ -69,9 +69,9 @@ const Frame = (props) => {
         Object.entries(availTags).forEach(([key, kind],) => {
             const ktags = ftags.filter(tag => tag.k === key)
             if (kind.l === 1) {
-                drawLine(ctx, ktags)
+                drawLine(ctx, ktags, kind.c)
             } else {
-                ktags.forEach(tag => drawMarker(ctx, tag.x, tag.y))
+                ktags.forEach(tag => drawMarker(ctx, tag.x, tag.y, kind.c))
             }
         })
     }, [image, canvasRef, frame, drawMarker, drawLine, serieTags, tagsDict])
