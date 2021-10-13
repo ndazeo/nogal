@@ -6,3 +6,7 @@ deploy:
     - cp ./build/* -r /deep/ndazeo/nogal/public/
   only:
     - main
+
+cache:
+  paths:
+  - node_modules/
