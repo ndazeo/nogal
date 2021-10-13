@@ -45,7 +45,7 @@ const Tagger = (props) => {
       setCurrentTag(null);
     }
     if (key.key === 'C' && frame > 0) {
-      api.deleteTag(serie._id, frame=frame).then(({ status, result }) => {
+      api.deleteTag(serie._id, {f:frame}).then(({ status, result }) => {
         if (status === 200) {
           result.tags
             .filter(tag => tag.f === frame-1)
@@ -70,7 +70,7 @@ const Tagger = (props) => {
 
   const onFrameMouseUp = (x, y) => {
     if (tagMode === "delete") {
-      api.deleteTag(serie._id, x, y, frame).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+      api.deleteTag(serie._id, {x:x, y:y, f:frame}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
     } else if (tagMode === "move" && selectedTag !== null) {
       const tagElem = serieTags[selectedTag]
       tagElem['x'] = x
@@ -81,6 +81,11 @@ const Tagger = (props) => {
       const tagElem = { 'x': x, 'y': y, 'f': frame, 'k': currentTag._id };
       if (currentTag.l) {
         tagElem['i'] = serieTags.filter(t => t.k === currentTag._id).length;
+        // TODO:
+        // * buscar si cae sobre la linea
+        //   + filtrar por tipo
+        //   + recorrer todos?
+        // * insertar en fracción
       }
       api.addTag(serie._id, tagElem).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
     }

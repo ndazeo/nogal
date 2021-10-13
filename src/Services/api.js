@@ -103,11 +103,11 @@ const useAPI = (props) => {
             const data = await response.json()
             return { 'status': response.status, 'result': data }
         },
-    deleteTag: async (id, x, y, f) => {
+    deleteTag: async (id, {x, y, f} = {}) => {
             let url = `${URL}series/${id}/tags?`
-            if(x) url += `x=${x}&`
-            if(y) url += `y=${y}&`
-            if(f) url += `f=${f}&`
+            if(x!==undefined) url += `x=${x}&`
+            if(y!==undefined) url += `y=${y}&`
+            if(f!==undefined) url += `f=${f}&`
             const response = await fetch(url, {
                 method: 'DELETE',
                 headers: {
