@@ -1,7 +1,8 @@
 deploy:
   type: deploy
   script:
-    - npm build
+    - npm i
+    - npm run build
     - cp ./build/* -r /deep/ndazeo/nogal/public/
   only:
     - master
