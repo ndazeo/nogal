@@ -42,6 +42,7 @@ const Tagger = (props) => {
     }
     if (key.key === 'Escape') {
       setSelectedTag(null);
+      setCurrentTag(null);
     }
     if (key.key === 'C' && frame > 0) {
       api.deleteTag(serie._id, frame=frame).then(({ status, result }) => {
@@ -140,7 +141,7 @@ const Tagger = (props) => {
             setTag={setCurrentTag} currentTag={currentTag} />
         </TabPanel>
       </Tabs>
-      <Frame className={"MainFrame " + cursorClass} tags={tags}
+      <Frame className={"MainFrame " + cursorClass} tags={tags} currentTag={currentTag}
         serie={serie} serieTags={serieTags} frame={frame} api={api}
         onFrameMouseDown={onFrameMouseDown}
         onFrameMouseUp={onFrameMouseUp}

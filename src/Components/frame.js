@@ -9,7 +9,7 @@ const Frame = (props) => {
     const [tagsDict, setTagsDict] = useState({})
     const [image, setImage] = useState(null)
     const {
-        serie, serieTags, tags, frame, api,
+        serie, serieTags, tags, frame, api, currentTag,
         onFrameMouseDown, onFrameMouseUp, onFrameMouseMove
     } = props
 
@@ -68,13 +68,14 @@ const Frame = (props) => {
         const availTags = ftags.reduce((acc, tag) => ({ ...acc, [tag.k]: tagsDict[tag.k] }), {})
         Object.entries(availTags).forEach(([key, kind],) => {
             const ktags = ftags.filter(tag => tag.k === key)
+            const color = currentTag && key === currentTag._id ? "white" : kind.c
             if (kind.l === 1) {
-                drawLine(ctx, ktags, kind.c)
+                drawLine(ctx, ktags, color)
             } else {
-                ktags.forEach(tag => drawMarker(ctx, tag.x, tag.y, kind.c))
+                ktags.forEach(tag => drawMarker(ctx, tag.x, tag.y, color))
             }
         })
-    }, [image, canvasRef, frame, drawMarker, drawLine, serieTags, tagsDict])
+    }, [image, canvasRef, frame, drawMarker, drawLine, serieTags, tagsDict, currentTag])
 
     useEffect(() => {
         if (serie) {
