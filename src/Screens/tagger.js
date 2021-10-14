@@ -68,6 +68,35 @@ const Tagger = (props) => {
     setFrame(0);
   }
 
+  const pointLineDistance = (p, pA, pB) => {
+    const x = p.x - pA.x;
+    const y = p.y - pA.y;
+    const A = pB.x - pA.x;
+    const B = pB.y - pA.y;
+    const C = A * A + B * B;
+    const dist = Math.abs(A * y - B * x) / Math.sqrt(C);
+    return dist;
+  }
+
+  const pointInSection = (p, pA, pB) => {
+    const {x,y} = p;
+    const [xMin, xMax] = [pA.x, pB.x].sort();
+    const [yMin, yMax] = [pA.y, pB.y].sort();
+    if(!(xMin <= x && x <= xMax && yMin <= y && y <= yMax))
+      return false;
+    if(pointLineDistance(p, pA, pB) > 0.005)
+      return false;
+    return true;
+  }
+
+  const pointInPolyline = (p, polyline) => {
+    for(let i = 0; i < polyline.length - 1; i++) {
+      if(pointInSection(p, polyline[i], polyline[i+1]))
+        return (polyline[i+1].i - polyline[i].i)/2 + polyline[i].i;
+    }
+    return false;
+  }
+
   const onFrameMouseUp = (x, y) => {
     if (tagMode === "delete") {
       api.deleteTag(serie._id, {x:x, y:y, f:frame}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
@@ -80,12 +109,10 @@ const Tagger = (props) => {
     } else if (tagMode === "add" && currentTag) {
       const tagElem = { 'x': x, 'y': y, 'f': frame, 'k': currentTag._id };
       if (currentTag.l) {
-        tagElem['i'] = serieTags.filter(t => t.k === currentTag._id).length;
-        // TODO:
-        // * buscar si cae sobre la linea
-        //   + filtrar por tipo
-        //   + recorrer todos?
-        // * insertar en fracción
+        const sameKind = serieTags
+          .filter(t => t.k === currentTag._id && t.f === frame)
+          .sort((a, b) => a.i - b.i);
+        tagElem['i'] = pointInPolyline(tagElem, sameKind) || sameKind.length;
       }
       api.addTag(serie._id, tagElem).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
     }
