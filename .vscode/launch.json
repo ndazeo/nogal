@@ -15,10 +15,6 @@
                 {
                     "url": "file:///C:/Users/nico/Documents/projects/ANKloud/web_client/src",
                     "path": "${workspaceFolder}/src"
-                },
-                {
-                    "url": "file:///C:/Users/nico/Documents/projects/ANKloud/web_client/src",
-                    "path": "${workspaceFolder}/src"
                 }
             ]
         }
