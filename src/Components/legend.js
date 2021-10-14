@@ -11,7 +11,7 @@ const Legend = () => {
 
     return (
         <div className="legend">
-            <a href="#" onClick={toggleHidden} class="helpicon">?</a>
+            <span onClick={toggleHidden} class="helpicon">?</span>
             <div className={"legend-frame " + (hidden?"hidden":"")}>
                 <h2>Help:</h2>
                 <p></p>
