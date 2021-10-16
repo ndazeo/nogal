@@ -7,7 +7,7 @@ const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
 
     const { setTag, currentTag, tags, serie } = props;
-    
+
     React.useEffect(() => {
         if (serie && serie.tags)
             setUsedTags(serie.tags.reduce(
@@ -25,6 +25,16 @@ const TagControl = (props) => {
     if (!serie)
         return (<div>Select a serie to start</div>);
 
+    const tagDOMElem = (tag) => (
+        <li className={currentTag && currentTag._id === tag._id ? "selectedSerie" : null}>
+            <a href={tag.n} 
+                onClick={handleTagChange(tag)} 
+                style={{ color: currentTag && currentTag._id === tag._id ? "white" : tag.c }}>
+                {tag.n}
+            </a>
+        </li>
+    )
+
     return (
         <div className="tag-control">
             <p>
@@ -33,13 +43,9 @@ const TagControl = (props) => {
             <p>Existing tags:</p>
             <div class="tagsList">
                 <ul>
-                {tags && tags
+                    {tags && tags
                         .filter(tag => usedTags && usedTags.find(t => t === tag._id))
-                        .map((tag, index) =>
-                            <li className={currentTag && currentTag._id === tag._id ? "selectedSerie" : null}>
-                                <a href={tag.n} onClick={handleTagChange(tag)}>{tag.n}</a>
-                            </li>
-                        )}
+                        .map(tagDOMElem)}
                 </ul>
             </div>
             <p>Available tags:</p>
@@ -47,11 +53,7 @@ const TagControl = (props) => {
                 <ul>
                     {tags && tags
                         .filter(tag => !usedTags || !usedTags.find(t => t === tag._id))
-                        .map((tag, index) =>
-                            <li className={currentTag && currentTag._id === tag._id ? "selectedSerie" : null}>
-                                <a href={tag.n} onClick={handleTagChange(tag)}>{tag.n}</a>
-                            </li>
-                        )}
+                        .map(tagDOMElem)}
                 </ul>
             </div>
         </div>
