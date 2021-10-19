@@ -33,7 +33,7 @@ const Frame = (props) => {
             ctx.lineWidth = 1;
             ctx.strokeStyle = color || "red";
             const [w, h] = [ctx.canvas.width, ctx.canvas.height]
-            const points = tags.sort((a, b) => a.i > b.i)
+            const points = tags.sort((a, b) => a.i - b.i)
             ctx.moveTo(points[0].x * w, points[0].y * h);
             for (var t = 0; t < points.length; t++) {
                 ctx.lineTo(points[t].x * w, points[t].y * h);
