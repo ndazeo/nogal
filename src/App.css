@@ -5,4 +5,7 @@
   width: 100vw;
   font-size: calc(10px + 2vmin);
   color: white;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: 1fr;
 }
