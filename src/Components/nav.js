@@ -2,7 +2,7 @@ import { useState } from "react";
 import './nav.css';
 
 const Nav = (props) => {
-    const [responsive, SetResponsive] = useState(false);
+    const [responsive, ] = useState(false);
 
     const { onSignOut } = props;
 
