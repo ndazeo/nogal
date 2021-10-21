@@ -123,6 +123,7 @@ const Tagger = (props) => {
       const i = serieTags.findIndex(t => x - 0.005 < t.x && t.x < x + 0.005 && y - 0.005 < t.y && t.y < y + 0.005 && t.f === frame);
       setSelectedTag(i < 0 ? null : i);
     }
+    return tagMode !== "add" || currentTag;
   }
 
   const onFrameMouseMove = (x, y) => {

@@ -8,6 +8,8 @@ const Frame = (props) => {
     const [blob, setBlob] = useState(null)
     const [tagsDict, setTagsDict] = useState({})
     const [image, setImage] = useState(null)
+    const [frameWindow, setFrameWindow] = useState({left:0,top:0,zoom:1})
+    const [pan, setPan] = useState(null)
     const {
         serie, serieTags, tags, frame, api, currentTag,
         onFrameMouseDown, onFrameMouseUp, onFrameMouseMove
@@ -17,33 +19,44 @@ const Frame = (props) => {
         if (tags) setTagsDict(tags.reduce((acc, tag) => ({ [tag._id]: tag, ...acc }), {}))
     }, [tags])
 
+    const zoomXY = useCallback( (x,y, ctx) => {
+        return [ 
+            (x - frameWindow.left) / frameWindow.zoom * ctx.canvas.width, 
+            (y - frameWindow.top) / frameWindow.zoom * ctx.canvas.height 
+        ]
+    }, [frameWindow])
+
+    const realXY = useCallback(
+        (x,y) => [x*frameWindow.zoom+frameWindow.left, y*frameWindow.zoom+frameWindow.top],
+        [frameWindow],
+    )
+
     const drawMarker = useCallback((ctx, x, y, color, rad) => {
-        x = x * ctx.canvas.width
-        y = y * ctx.canvas.height
         ctx.beginPath();
         ctx.lineWidth = 1;
         ctx.strokeStyle = color || "green";
-        ctx.arc(x, y, rad||8, 0, 2 * Math.PI);
+        ctx.arc(...zoomXY(x, y, ctx), rad||8, 0, 2 * Math.PI);
         ctx.stroke();
-    }, [])
+    }, [zoomXY])
 
     const drawLine = useCallback((ctx, tags, color) => {
         if (tags.length > 1) {
             ctx.beginPath();
             ctx.lineWidth = 1;
             ctx.strokeStyle = color || "red";
-            const [w, h] = [ctx.canvas.width, ctx.canvas.height]
             const points = tags.sort((a, b) => a.i - b.i)
-            ctx.moveTo(points[0].x * w, points[0].y * h);
+            ctx.moveTo(...zoomXY(points[0].x, points[0].y, ctx));
             for (var t = 0; t < points.length; t++) {
-                ctx.lineTo(points[t].x * w, points[t].y * h);
+                ctx.lineTo(...zoomXY(points[t].x, points[t].y, ctx));
             }
             ctx.stroke();
         }
         tags.forEach(point => {
             drawMarker(ctx, point.x, point.y, color || "red", 3)
         })
-    }, [drawMarker])
+    }, [drawMarker, zoomXY])
+
+    
 
     useEffect(() => {
         if(!blob) {
@@ -56,6 +69,7 @@ const Frame = (props) => {
             setImage(event.target)
         }
         img.src = URL.createObjectURL(blob)
+        setFrameWindow({left:0,top:0,zoom:1})
     }, [blob])
 
     useEffect(() => {
@@ -63,7 +77,10 @@ const Frame = (props) => {
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
         if (!serieTags || !image) return
-        ctx.drawImage(image, 0, 0, ctx.canvas.width, ctx.canvas.height)
+        let {left,top,zoom} = frameWindow
+        left = left * ctx.canvas.width
+        top = top * ctx.canvas.height
+        ctx.drawImage(image, -left/zoom, -top/zoom, (ctx.canvas.width)/zoom, (ctx.canvas.height)/zoom)
         const ftags = serieTags.filter(tag => tag.f === frame)
         const availTags = ftags.reduce((acc, tag) => ({ ...acc, [tag.k]: tagsDict[tag.k] }), {})
         Object.entries(availTags).forEach(([key, kind],) => {
@@ -75,7 +92,7 @@ const Frame = (props) => {
                 ktags.forEach(tag => drawMarker(ctx, tag.x, tag.y, color))
             }
         })
-    }, [image, canvasRef, frame, drawMarker, drawLine, serieTags, tagsDict, currentTag])
+    }, [image, canvasRef, frame, drawMarker, drawLine, serieTags, tagsDict, currentTag, frameWindow])
 
     useEffect(() => {
         if (serie) {
@@ -91,7 +108,8 @@ const Frame = (props) => {
         const rect = canvas.getBoundingClientRect()
         const x = (event.clientX - rect.left) / rect.width
         const y = (event.clientY - rect.top) / rect.height
-        onFrameMouseUp(x, y)
+        setPan(null)
+        onFrameMouseUp(...realXY(x, y))
     }, canvasRef.current)
 
     useEventListener('mousedown', (event) => {
@@ -99,7 +117,9 @@ const Frame = (props) => {
         const rect = canvas.getBoundingClientRect()
         const x = (event.clientX - rect.left) / rect.width
         const y = (event.clientY - rect.top) / rect.height
-        onFrameMouseDown(x, y)
+        if(!onFrameMouseDown(...realXY(x, y))) {
+            setPan({x,y})
+        }
     }, canvasRef.current)
 
     useEventListener('mousemove', (event) => {
@@ -107,8 +127,41 @@ const Frame = (props) => {
         const rect = canvas.getBoundingClientRect()
         const x = (event.clientX - rect.left) / rect.width
         const y = (event.clientY - rect.top) / rect.height
-        onFrameMouseMove(x, y)
+        if(pan) {
+            setFrameWindow((f) => {
+                let left = f.left - (x - pan.x) * f.zoom
+                let top = f.top - (y - pan.y) * f.zoom
+                if (left<0) left = 0
+                if (top<0) top = 0
+                return {...f, left, top}
+            })
+            setPan({x,y})
+        }else{
+            onFrameMouseMove(...realXY(x, y))
+        }
     }, canvasRef.current)
+
+    useEventListener('wheel', (event) => {
+        const canvas = canvasRef.current
+        const rect = canvas.getBoundingClientRect()
+        const x = (event.clientX - rect.left) / rect.width
+        const y = (event.clientY - rect.top) / rect.height
+        const dy = event.deltaY/1000
+        setFrameWindow(
+            (f) => {
+                let zoom = f.zoom+dy
+                let left = f.left - x * dy
+                let top = f.left - y * dy
+                if(zoom>=1 || zoom<0) {
+                    zoom = 1
+                    left = 0
+                    top = 0
+                }
+                return {...f, zoom, left, top}
+            }
+        )
+    }, canvasRef.current)
+
 
     return (
         <canvas className="canvas" ref={canvasRef} {...props} width="1000" height="1000" />
