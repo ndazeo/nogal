@@ -6,9 +6,9 @@ const Nav = (props) => {
 
     const { onSignOut } = props;
 
-    function toogle() {
-        SetResponsive(!responsive);
-    }
+    // function toogle() {
+    //     SetResponsive(!responsive);
+    // }
 
     function signOut() {
         if(onSignOut) {
