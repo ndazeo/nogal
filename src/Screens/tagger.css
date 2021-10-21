@@ -1,24 +1,23 @@
 .Tagger {
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
+  display: grid;
+  grid-template-columns: auto auto auto;
+  grid-template-rows: 1fr;
 }
 
 .MainTab {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: auto;
+  height: 100vh;
 }
 
-.MainTab>div {
-  flex: 1;
+.MainTab>div.react-tabs__tab-panel--selected {
+  display: grid;
+  overflow: auto;
 }
 
 .MainFrame {
-  margin-right: 10%;
+  margin-left: 1em;
 }
 
 .cursor-add {

@@ -164,7 +164,7 @@ const Frame = (props) => {
 
 
     return (
-        <canvas className="canvas" ref={canvasRef} {...props} width="1000" height="1000" />
+        <canvas className={"canvas " + props.className} ref={canvasRef} width="1000" height="1000" />
     )
 }
 
