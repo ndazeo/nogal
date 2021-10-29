@@ -16,7 +16,10 @@ const Legend = () => {
             <div className={"legend-frame " + (hidden?"hidden":"")}>
                 <h2>Help:</h2>
                 <p></p>
-                <p>Click to add.</p>
+                <p>Vertical Scroll for zoom</p>
+                <p>Click with seleced tag for tagging</p>
+                <p>Esc to unselect tag</p>
+                <p>Click without selected tag for pan</p>
                 <p>Keep <span class="keyboardKey">Ctrl</span> pressed to delete.</p>
                 <p>Keep <span class="keyboardKey">Shift</span> pressed to drag.</p>
                 <p>Press <span class="keyboardKey">C</span> to copy previous frame tags (overrides existing tags).</p>
