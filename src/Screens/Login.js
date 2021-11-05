@@ -29,18 +29,18 @@ const Login = (props) => {
     <div className="contenedor">
       <div className="formulario loginForm">
 
-        <label for="email">Usuario</label>
+        <label for="email">User</label>
         <input ref={user} onChange={clearError} type="text" placeholder="Ingresar Usuario" />
 
-        <label for="password">Contraseña</label>
+        <label for="password">Password</label>
         <input ref={pass} onChange={clearError} type="password" placeholder="Ingresar contraseña" />
 
         <div className="form-group">
-          <button onClick={loginHandler} >Entrar</button>
+          <button onClick={loginHandler} >Login</button>
           {
             error ?
               <div className="errorMsg">
-                <p>Usuario o contraseña incorrecto!</p>
+                <p>Wrong user or password!</p>
               </div>
               :
               <div></div>
