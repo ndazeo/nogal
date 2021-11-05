@@ -34,9 +34,9 @@
     margin-left: auto; 
     margin-right: auto; 
     z-index: 99999;
-    left: 0;
+    /* left: 0; */
     right: 0;
-    width: 70%;
+    /* width: 70%; */
     border: whitesmoke solid 1px;
     background-color: #282c34;
     border-radius: 1em;
@@ -47,7 +47,7 @@
 
 .legend-frame p {
     text-align: left;
-    margin-left: 3em;
+    /* margin-left: 3em; */
 }
 
 .hidden {

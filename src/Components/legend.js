@@ -22,7 +22,7 @@ const Legend = () => {
                 <p>Click without selected tag for pan</p>
                 <p>Keep <span class="keyboardKey">Ctrl</span> pressed to delete.</p>
                 <p>Keep <span class="keyboardKey">Shift</span> pressed to drag.</p>
-                <p>Press <span class="keyboardKey">C</span> to copy previous frame tags (overrides existing tags).</p>
+                <p>Press <span class="keyboardKey">C</span> to copy previous frame tags.</p>
                 <p><span class="keyboardKey"><i class="fa fa-arrow-right"></i></span> Next frame</p>
                 <p><span class="keyboardKey"><i class="fa fa-arrow-left"></i></span> Previous frame.</p>
             </div>
