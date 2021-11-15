@@ -27,7 +27,7 @@ const Login = (props) => {
 
   return (
     <div className="contenedor">
-      <div className="formulario loginForm">
+      <div className="loginForm">
 
         <label for="email">User</label>
         <input ref={user} onChange={clearError} type="text" placeholder="Ingresar Usuario" />

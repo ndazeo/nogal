@@ -19,8 +19,12 @@ const Tagger = (props) => {
   const [selectedTag, setSelectedTag] = useState(null);
   const [serieTags, setSerieTags] = useState([]);
   const [tags, setTags] = useState([]);
+  const [tagsDict, setTagsDict] = useState({})
   const { api } = props
-
+  
+  useEffect(() => {
+      if (tags) setTagsDict(tags.reduce((acc, tag) => ({ [tag._id]: tag, ...acc }), {}))
+  }, [tags])
 
   useEffect(() => {
     api.getTags().then(setTags);
@@ -99,7 +103,11 @@ const Tagger = (props) => {
 
   const onFrameMouseUp = (x, y) => {
     if (tagMode === "delete") {
-      api.deleteTag(serie._id, {x:x, y:y, f:frame}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+      const tag = serieTags.find(t => 
+        x - 0.005 < t.x && t.x < x + 0.005 && 
+        y - 0.005 < t.y && t.y < y + 0.005 && 
+        t.f === frame && !tagsDict[t.k].hidden);
+      api.deleteTag(serie._id, {x:x, y:y, f:frame, k:tag.k}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
     } else if (tagMode === "move" && selectedTag !== null) {
       const tagElem = serieTags[selectedTag]
       tagElem['x'] = x
@@ -120,7 +128,10 @@ const Tagger = (props) => {
 
   const onFrameMouseDown = (x, y) => {
     if (tagMode === "move") {
-      const i = serieTags.findIndex(t => x - 0.005 < t.x && t.x < x + 0.005 && y - 0.005 < t.y && t.y < y + 0.005 && t.f === frame);
+      const i = serieTags.findIndex(t => 
+          x - 0.005 < t.x && t.x < x + 0.005 && 
+          y - 0.005 < t.y && t.y < y + 0.005 && 
+          t.f === frame && !tagsDict[t.k].hidden);
       setSelectedTag(i < 0 ? null : i);
     }
     return tagMode !== "add" || currentTag;
@@ -171,10 +182,12 @@ const Tagger = (props) => {
         </TabPanel>
         <TabPanel>
           <TagControl serie={serie} frame={frame} tags={tags}
-            setTag={setCurrentTag} currentTag={currentTag} />
+            setTag={setCurrentTag} currentTag={currentTag}
+            updateTags={setTags}
+            />
         </TabPanel>
       </Tabs>
-      <Frame className={"MainFrame " + cursorClass} tags={tags} currentTag={currentTag}
+      <Frame className={"MainFrame " + cursorClass} tagsDict={tagsDict} currentTag={currentTag}
         serie={serie} serieTags={serieTags} frame={frame} api={api}
         onFrameMouseDown={onFrameMouseDown}
         onFrameMouseUp={onFrameMouseUp}

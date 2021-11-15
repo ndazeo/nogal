@@ -6,11 +6,11 @@
   align-items: center;
 }
 
-.formulario {
+.loginForm {
   width: 40%;
 }
 
-form {
+.loginForm form {
   border: 3px solid #f1f1f1;
 }
 
@@ -24,7 +24,7 @@ form {
   box-sizing: border-box;
 }
 
-button {
+.loginForm button {
   background-color: #4a577f;
   color: white;
   padding: 14px 20px;
@@ -34,10 +34,10 @@ button {
   width: 100%;
 }
 
-button:hover {
+.loginForm button:hover {
   opacity: 0.8;
 }
 
-.errorMsg {
+.loginForm .errorMsg {
   color: darkred;
 }

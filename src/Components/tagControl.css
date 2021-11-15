@@ -10,3 +10,11 @@
 .selectedTag {
    text-decoration: underline;
 }
+
+.eyebutton {
+   margin-left: 0.5em;
+}
+
+.fa-gray{
+   color: #222;
+}

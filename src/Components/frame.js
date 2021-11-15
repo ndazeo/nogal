@@ -6,18 +6,13 @@ import './frame.css'
 const Frame = (props) => {
     const canvasRef = useRef(null);
     const [blob, setBlob] = useState(null)
-    const [tagsDict, setTagsDict] = useState({})
     const [image, setImage] = useState(null)
     const [frameWindow, setFrameWindow] = useState({left:0,top:0,zoom:1})
     const [pan, setPan] = useState(null)
     const {
-        serie, serieTags, tags, frame, api, currentTag,
+        serie, serieTags, tagsDict, frame, api, currentTag,
         onFrameMouseDown, onFrameMouseUp, onFrameMouseMove
     } = props
-
-    useEffect(() => {
-        if (tags) setTagsDict(tags.reduce((acc, tag) => ({ [tag._id]: tag, ...acc }), {}))
-    }, [tags])
 
     const zoomXY = useCallback( (x,y, ctx) => {
         return [ 
@@ -84,6 +79,7 @@ const Frame = (props) => {
         const ftags = serieTags.filter(tag => tag.f === frame)
         const availTags = ftags.reduce((acc, tag) => ({ ...acc, [tag.k]: tagsDict[tag.k] }), {})
         Object.entries(availTags).forEach(([key, kind],) => {
+            if(kind.hidden) return;
             const ktags = ftags.filter(tag => tag.k === key)
             const color = currentTag && key === currentTag._id ? "white" : kind.c
             if (kind.l === 1) {

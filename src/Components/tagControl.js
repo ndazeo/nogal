@@ -6,7 +6,7 @@ const isInt = (value) => parseInt(value, 10) === value;
 const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
 
-    const { setTag, currentTag, tags, serie } = props;
+    const { setTag, currentTag, tags, serie, updateTags } = props;
 
     React.useEffect(() => {
         if (serie && serie.tags)
@@ -22,6 +22,14 @@ const TagControl = (props) => {
         setTag(tag);
     };
 
+    const toogleHide = (tag) => (event) => {
+        if(tag.hidden)
+            tag.hidden = false;
+        else
+            tag.hidden = true;
+        updateTags(tags => tags.map(t => t._id === tag._id ? tag : t));
+    }
+
     if (!serie)
         return (<div>Select a serie to start</div>);
 
@@ -32,6 +40,14 @@ const TagControl = (props) => {
                 style={{ color: currentTag && currentTag._id === tag._id ? "white" : tag.c }}>
                 {tag.n}
             </a>
+            <button class="nobutton eyebutton" onClick={toogleHide(tag)}>
+                { tag.hidden ?
+                    <i class="fa fa-eye fa-gray"></i>
+                     : 
+                    <i class="fa fa-eye"></i>
+                }
+            </button>
+        
         </li>
     )
 
