@@ -62,18 +62,12 @@ const Frame = (props) => {
             setImages(images => {
                 if(images && images.serieId === serieId){
                     images.images[i] = img;
-                    console.log(`loaded image ${serieId}:${i}`)
                 }else{
-                    
-                    console.log(`ignored image ${serieId}:${i}`)
+                
                 }
                 return images;
             });
             setImage(image => {
-                if(!image || image.serieId !== serieId || image.frame !== i)
-                    console.log(`not set image ${serieId}:${i}`)
-                else
-                    console.log(`set image ${serieId}:${i}`)
                 return !image ||
                     image.serieId !== serieId || image.frame !== i ? 
                     image : {serieId, image: img}
@@ -99,18 +93,17 @@ const Frame = (props) => {
                 })
             )
         ).reduce((a,b) => a.concat(b), [])
-        console.log(`loading ${serieId}`)
         loader.postMessage(requests);
 
     }, [serie, api, loader])
     
     useEffect(() => {
         if(!images) {
-            setImage(console.log("clear image")&&null);
+            setImage(null);
             return
         }
         if(!images.images || !images.images[frame]){
-            setImage({serieId:images.serieId, image:console.log("image struct")&&null, frame: frame});
+            setImage({serieId:images.serieId, image:null, frame: frame});
             return
         }
         setImage({serieId:images.serieId, image:images.images[frame], frame: 0});
