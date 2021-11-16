@@ -139,8 +139,8 @@ const Tagger = (props) => {
 
   const toogleDoubt = (_tag) => () => {
     const tag = serieTags.find(t => 
-      t.x == -1 && t.y == -1 && 
-      t.k == _tag._id && t.f === frame);
+      t.x === -1 && t.y === -1 && 
+      t.k === _tag._id && t.f === frame);
     if(tag)
       api.deleteTag(serie._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
     else
@@ -193,7 +193,7 @@ const Tagger = (props) => {
         <TabPanel>
           <TagControl serie={serie} frame={frame} tags={tags}
             setTag={setCurrentTag} currentTag={currentTag} serieTags={serieTags}
-            updateTags={setTags} toogleDoubt={toogleDoubt} frame={frame}
+            updateTags={setTags} toogleDoubt={toogleDoubt}
             />
         </TabPanel>
       </Tabs>
