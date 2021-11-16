@@ -11,7 +11,6 @@ const Legend = () => {
 
     return (
         <div className="legend">
-            <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
             <span onClick={toggleHidden} className="helpicon">?</span>
             <div className={"legend-frame " + (hidden?"hidden":"")}>
                 <h2>Help:</h2>

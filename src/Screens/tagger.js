@@ -137,6 +137,16 @@ const Tagger = (props) => {
     return tagMode !== "add" || currentTag;
   }
 
+  const toogleDoubt = (_tag) => () => {
+    const tag = serieTags.find(t => 
+      t.x == -1 && t.y == -1 && 
+      t.k == _tag._id && t.f === frame);
+    if(tag)
+      api.deleteTag(serie._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+    else
+      api.addTag(serie._id, {'x':-1, 'y':-1, 'f':frame, 'k':_tag._id}).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
+  }
+
   const onFrameMouseMove = (x, y) => {
     if (tagMode === "move" && selectedTag !== null) {
       let t = serieTags[selectedTag]
@@ -182,8 +192,8 @@ const Tagger = (props) => {
         </TabPanel>
         <TabPanel>
           <TagControl serie={serie} frame={frame} tags={tags}
-            setTag={setCurrentTag} currentTag={currentTag}
-            updateTags={setTags}
+            setTag={setCurrentTag} currentTag={currentTag} serieTags={serieTags}
+            updateTags={setTags} toogleDoubt={toogleDoubt} frame={frame}
             />
         </TabPanel>
       </Tabs>

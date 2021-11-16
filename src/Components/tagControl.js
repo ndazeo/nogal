@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useCallback } from "react";
 import './tagControl.css'
 
 const isInt = (value) => parseInt(value, 10) === value;
@@ -6,7 +6,7 @@ const isInt = (value) => parseInt(value, 10) === value;
 const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
 
-    const { setTag, currentTag, tags, serie, updateTags } = props;
+    const { setTag, currentTag, tags, serie, updateTags, toogleDoubt, serieTags, frame } = props;
 
     React.useEffect(() => {
         if (serie && serie.tags)
@@ -21,6 +21,14 @@ const TagControl = (props) => {
         event.preventDefault();
         setTag(tag);
     };
+
+    const doubt = useCallback((tag) => {
+        return serieTags 
+        && serieTags.find(e => 
+                e.k === tag._id && e.f === frame
+                && e.x === -1 && e.y === -1)
+        
+    }, [serieTags, frame])
 
     const toogleHide = (tag) => (event) => {
         if(tag.hidden)
@@ -42,9 +50,16 @@ const TagControl = (props) => {
             </a>
             <button className="nobutton eyebutton" onClick={toogleHide(tag)}>
                 { tag.hidden ?
-                    <i className="fa fa-eye fa-gray"></i>
+                    <i className="far fa-eye-slash fa-gray"></i>
                      : 
-                    <i className="fa fa-eye"></i>
+                    <i className="far fa-eye"></i>
+                }
+            </button>
+            <button className="nobutton eyebutton" onClick={toogleDoubt(tag)}>
+                { !doubt(tag) ?
+                    <i className="fa fa-triangle-exclamation fa-gray"></i>
+                     : 
+                    <i className="fa fa-triangle-exclamation fa-yellow"></i>
                 }
             </button>
         

@@ -130,7 +130,7 @@ const Frame = (props) => {
         left = left * ctx.canvas.width
         top = top * ctx.canvas.height
         ctx.drawImage(image.image, -left/zoom, -top/zoom, (ctx.canvas.width)/zoom, (ctx.canvas.height)/zoom)
-        const ftags = serieTags.filter(tag => tag.f === frame)
+        const ftags = serieTags.filter(tag => tag.f === frame && tag.x >= 0)
         const availTags = ftags.reduce((acc, tag) => ({ ...acc, [tag.k]: tagsDict[tag.k] }), {})
         Object.entries(availTags).forEach(([key, kind],) => {
             if(kind.hidden) return;
