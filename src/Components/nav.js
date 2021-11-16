@@ -20,11 +20,11 @@ const Nav = (props) => {
         <div>
             <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css"></link>
 
-            <div class={"topnav" + (responsive? " responsive" : "")} >
-                {/* <a href="#home" class="active">Tag</a> */}
-                {onSignOut && <a href="#logout" onClick={signOut} class="bottom"><i class="fa fa-sign-out"></i></a>}
-                {/* <a href="javascript:void(0);" class="icon" onclick={toogle}>
-                    <i class="fa fa-bars"></i>
+            <div className={"topnav" + (responsive? " responsive" : "")} >
+                {/* <a href="#home" className="active">Tag</a> */}
+                {onSignOut && <a href="#logout" onClick={signOut} className="bottom"><i className="fa fa-sign-out"></i></a>}
+                {/* <a href="javascript:void(0);" className="icon" onclick={toogle}>
+                    <i className="fa fa-bars"></i>
                 </a> */}
             </div>
         </div>

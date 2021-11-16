@@ -40,11 +40,11 @@ const TagControl = (props) => {
                 style={{ color: currentTag && currentTag._id === tag._id ? "white" : tag.c }}>
                 {tag.n}
             </a>
-            <button class="nobutton eyebutton" onClick={toogleHide(tag)}>
+            <button className="nobutton eyebutton" onClick={toogleHide(tag)}>
                 { tag.hidden ?
-                    <i class="fa fa-eye fa-gray"></i>
+                    <i className="fa fa-eye fa-gray"></i>
                      : 
-                    <i class="fa fa-eye"></i>
+                    <i className="fa fa-eye"></i>
                 }
             </button>
         
@@ -57,7 +57,7 @@ const TagControl = (props) => {
                 Frame: {props && isInt(props.frame) ? props.frame + 1 : 0} / {props && serie ? serie.shape.f : 0}
             </p>
             <p>Existing tags:</p>
-            <div class="tagsList">
+            <div className="tagsList">
                 <ul>
                     {tags && tags
                         .filter(tag => usedTags && usedTags.find(t => t === tag._id))
@@ -65,7 +65,7 @@ const TagControl = (props) => {
                 </ul>
             </div>
             <p>Available tags:</p>
-            <div class="tagsList">
+            <div className="tagsList">
                 <ul>
                     {tags && tags
                         .filter(tag => !usedTags || !usedTags.find(t => t === tag._id))

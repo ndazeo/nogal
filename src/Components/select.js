@@ -22,12 +22,12 @@ const Select = (props) => {
         <div className="selectForm">
             <div>
                 <label htmlFor="select">Patient </label>
-                <select class="box" value={patient ? patient._id : null} onChange={handlePatientChange}>
-                    <option value="">Select a patient</option>
+                <select className="box" value={patient ? patient._id : "null"} onChange={handlePatientChange}>
+                    <option key="" value="null">Select a patient</option>
                     {patients
                         .sort((a, b) => a.name > b.name? 1 : -1)
                         .map(ipatient =>
-                            <option value={ipatient._id}>
+                            <option key={ipatient._id} value={ipatient._id}>
                                 {ipatient.name}
                             </option>
                         )}
@@ -40,7 +40,7 @@ const Select = (props) => {
                         {patient && patient.series && patient.series
                             .sort((a, b) => a.name > b.name ? 1 : -1)
                             .map(iserie =>
-                                <li className={serie && serie._id === iserie._id ? "selectedSerie" : null}>
+                                <li key={iserie._id} className={serie && serie._id === iserie._id ? "selectedSerie" : null}>
                                     <a href={iserie._id} data-id={iserie._id} onClick={handleSerieChange}>{iserie.name}</a>
                                 </li>
                             )}

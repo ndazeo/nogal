@@ -1,12 +1,15 @@
-import React, { useRef, useEffect, useState, useCallback } from 'react'
+import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import useEventListener from '@use-it/event-listener'
+import Loading from './loading'
 import './frame.css'
 
 
 const Frame = (props) => {
+    const loader = useMemo(() => new Worker('Workers/loader.js'), [])
     const canvasRef = useRef(null);
-    const [blob, setBlob] = useState(null)
+    const [images, setImages] = useState(null)
     const [image, setImage] = useState(null)
+    const [imageLoading, setImageLoading] = useState(false)
     const [frameWindow, setFrameWindow] = useState({left:0,top:0,zoom:1})
     const [pan, setPan] = useState(null)
     const {
@@ -50,32 +53,83 @@ const Frame = (props) => {
             drawMarker(ctx, point.x, point.y, color || "red", 3)
         })
     }, [drawMarker, zoomXY])
-
     
-
-    useEffect(() => {
-        if(!blob) {
-            setImage(null)
-            return
-        }
+    loader.onmessage = (msg) => {
+        const {result, i, serieId} = msg.data;
         const img = new Image();
         img.onload = (event) => {
             URL.revokeObjectURL(event.target.src) // 👈 This is important. If you are not using the blob, you should release it if you don't want to reuse it. It's good for memory.
-            setImage(event.target)
+            setImages(images => {
+                if(images && images.serieId === serieId){
+                    images.images[i] = img;
+                    console.log(`loaded image ${serieId}:${i}`)
+                }else{
+                    
+                    console.log(`ignored image ${serieId}:${i}`)
+                }
+                return images;
+            });
+            setImage(image => {
+                if(!image || image.serieId !== serieId || image.frame !== i)
+                    console.log(`not set image ${serieId}:${i}`)
+                else
+                    console.log(`set image ${serieId}:${i}`)
+                return !image ||
+                    image.serieId !== serieId || image.frame !== i ? 
+                    image : {serieId, image: img}
+                }
+            )
         }
-        img.src = URL.createObjectURL(blob)
+        img.src = URL.createObjectURL(new Blob([result]))
+    }
+
+    useEffect(() => {
+        //loader.terminate();
+        if (!serie) return;
+        
+        let serieId = serie._id;
+        setImages({serieId:serieId, images: []});
+       
+        const requests = serie.files.map(
+            file => Array.from({length:file.fs}, (_,i) => 
+                ({
+                    method: 'getFrame',
+                    params: [api.URL, api.token, file.path, i], 
+                    ret: {i: file.f+i, serieId: serieId}
+                })
+            )
+        ).reduce((a,b) => a.concat(b), [])
+        console.log(`loading ${serieId}`)
+        loader.postMessage(requests);
+
+    }, [serie, api, loader])
+    
+    useEffect(() => {
+        if(!images) {
+            setImage(console.log("clear image")&&null);
+            return
+        }
+        if(!images.images || !images.images[frame]){
+            setImage({serieId:images.serieId, image:console.log("image struct")&&null, frame: frame});
+            return
+        }
+        setImage({serieId:images.serieId, image:images.images[frame], frame: 0});
         setFrameWindow({left:0,top:0,zoom:1})
-    }, [blob])
+    }, [images, frame])
+
+    useEffect(() => {
+        setImageLoading(image && !image.image);
+    }, [image])
 
     useEffect(() => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        if (!serieTags || !image) return
+        if (!serieTags || !image || !image.image) return
         let {left,top,zoom} = frameWindow
         left = left * ctx.canvas.width
         top = top * ctx.canvas.height
-        ctx.drawImage(image, -left/zoom, -top/zoom, (ctx.canvas.width)/zoom, (ctx.canvas.height)/zoom)
+        ctx.drawImage(image.image, -left/zoom, -top/zoom, (ctx.canvas.width)/zoom, (ctx.canvas.height)/zoom)
         const ftags = serieTags.filter(tag => tag.f === frame)
         const availTags = ftags.reduce((acc, tag) => ({ ...acc, [tag.k]: tagsDict[tag.k] }), {})
         Object.entries(availTags).forEach(([key, kind],) => {
@@ -89,15 +143,6 @@ const Frame = (props) => {
             }
         })
     }, [image, canvasRef, frame, drawMarker, drawLine, serieTags, tagsDict, currentTag, frameWindow])
-
-    useEffect(() => {
-        if (serie) {
-            const file = serie.files
-                .filter(file => file.f <= frame)
-                .reduce((acc, file) => (acc && acc.f > file.f) ? acc : file, null)
-            api.getFrame(file.path, frame - file.f).then(setBlob)
-        }
-    }, [serie, frame, api])
 
     useEventListener('mouseup', (event) => {
         const canvas = canvasRef.current
@@ -160,7 +205,10 @@ const Frame = (props) => {
 
 
     return (
-        <canvas className={"canvas " + props.className} ref={canvasRef} width="1000" height="1000" />
+        <span style={{display: "flex", position: "relative","justify-content": "center","align-items": "center"}}>
+            <Loading visible={imageLoading} />
+            <canvas className={"canvas " + props.className} ref={canvasRef} width="1000" height="1000" />       
+        </span>
     )
 }
 

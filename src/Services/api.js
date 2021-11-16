@@ -25,10 +25,13 @@ const apiFetch = (token, setToken) => async (url, params) => {
 const useAPI = (props) => {
     if(!props) return
     const [token, setToken] = props
-
+    
     const fetch = apiFetch(token, setToken);
 
     return {
+        token: token,
+        URL: URL,
+
         getFrame: async (fileid, f) => {
             const response = await fetch(`${URL}data/?id=${fileid}&f=${f}`, {
                 method: 'GET',
