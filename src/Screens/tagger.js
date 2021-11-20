@@ -15,6 +15,7 @@ const Tagger = (props) => {
   const [frame, setFrame] = useState(null);
   const [currentTag, setCurrentTag] = useState(null);
   const [tagMode, setTagMode] = useState("add");
+  const [tagJump, setTagJump] = useState(false);
   const [cursorClass, setCursorClass] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
   const [serieTags, setSerieTags] = useState([]);
@@ -42,13 +43,17 @@ const Tagger = (props) => {
       setTagMode("delete");
     }
     if (key.key === 'Shift') {
-      setTagMode("move");
+      setTagMode(mode => {
+        if(mode !== "move") setSelectedTag(null);
+        return "move";
+      });
     }
     if (key.key === 'Escape') {
+      setTagMode("add");
       setSelectedTag(null);
       setCurrentTag(null);
     }
-    if (key.key === 'C' && frame > 0) {
+    if (key.key.toUpperCase() === 'C' && frame > 0) {
       api.deleteTag(serie._id, {f:frame}).then(({ status, result }) => {
         if (status === 200) {
           result.tags
@@ -58,6 +63,9 @@ const Tagger = (props) => {
             );
         }
       });
+    }
+    if (key.key.toUpperCase() === 'J') {
+      setTagJump(tagJump => !tagJump);
     }
   });
 
@@ -95,10 +103,19 @@ const Tagger = (props) => {
 
   const pointInPolyline = (p, polyline) => {
     for(let i = 0; i < polyline.length - 1; i++) {
-      if(pointInSection(p, polyline[i], polyline[i+1]))
-        return (polyline[i+1].i - polyline[i].i)/2 + polyline[i].i;
+      if(polyline[i].s === polyline[i+1].s && pointInSection(p, polyline[i], polyline[i+1]))
+        return {
+          i: (polyline[i+1].i - polyline[i].i)/2 + polyline[i].i,
+          s: polyline[i].s
+        };
     }
-    return false;
+    if ( polyline.length ) {
+      return {
+        i: polyline[polyline.length - 1].i + 1,
+        s: polyline[polyline.length - 1].s
+      }
+    }
+    return {i: 0, s: 0};
   }
 
   const onFrameMouseUp = (x, y) => {
@@ -107,7 +124,7 @@ const Tagger = (props) => {
         x - 0.005 < t.x && t.x < x + 0.005 && 
         y - 0.005 < t.y && t.y < y + 0.005 && 
         t.f === frame && !tagsDict[t.k].hidden);
-      api.deleteTag(serie._id, {x:x, y:y, f:frame, k:tag.k}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+      if(tag) api.deleteTag(serie._id, {x:x, y:y, f:frame, k:tag.k}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
     } else if (tagMode === "move" && selectedTag !== null) {
       const tagElem = serieTags[selectedTag]
       tagElem['x'] = x
@@ -118,9 +135,17 @@ const Tagger = (props) => {
       const tagElem = { 'x': x, 'y': y, 'f': frame, 'k': currentTag._id };
       if (currentTag.l) {
         const sameKind = serieTags
-          .filter(t => t.k === currentTag._id && t.f === frame)
+          .filter(t => t.k === currentTag._id && t.f === frame && t.x >= 0)
           .sort((a, b) => a.i - b.i);
-        tagElem['i'] = pointInPolyline(tagElem, sameKind) || sameKind.length;
+        if (tagJump && sameKind.length){
+          tagElem['i'] = sameKind[sameKind.length - 1].i + 1;
+          tagElem['s'] = sameKind[sameKind.length - 1].s + 1;
+          setTagJump(false);
+        } else {
+          const {i, s} = pointInPolyline(tagElem, sameKind);
+          tagElem['i'] = i;
+          tagElem['s'] = s;
+        }
       }
       api.addTag(serie._id, tagElem).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
     }
@@ -162,11 +187,16 @@ const Tagger = (props) => {
     } else if (tagMode === "move") {
       setCursorClass('cursor-move');
     } else if (currentTag) {
-      setCursorClass('cursor-add');
+      console.log(tagJump);
+      if(tagJump){
+        setCursorClass('cursor-jump');
+      } else {
+        setCursorClass('cursor-add');
+      }
     } else {
       setCursorClass('cursor-default');
     }
-  }, [currentTag, tagMode]);
+  }, [currentTag, tagMode, tagJump]);
 
   useEffect(() => {
     if (serie) {

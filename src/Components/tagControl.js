@@ -42,7 +42,7 @@ const TagControl = (props) => {
         return (<div>Select a serie to start</div>);
 
     const tagDOMElem = (tag) => (
-        <li className={currentTag && currentTag._id === tag._id ? "selectedSerie" : null}>
+        <li key={tag._id} className={currentTag && currentTag._id === tag._id ? "selectedSerie" : null}>
             <a href={tag.n} 
                 onClick={handleTagChange(tag)} 
                 style={{ color: currentTag && currentTag._id === tag._id ? "white" : tag.c }}>

@@ -44,8 +44,14 @@ const Frame = (props) => {
             ctx.strokeStyle = color || "red";
             const points = tags.sort((a, b) => a.i - b.i)
             ctx.moveTo(...zoomXY(points[0].x, points[0].y, ctx));
+            let s = points[0].s;
             for (var t = 0; t < points.length; t++) {
-                ctx.lineTo(...zoomXY(points[t].x, points[t].y, ctx));
+                if (points[t].s !== s) {
+                    ctx.moveTo(...zoomXY(points[t].x, points[t].y, ctx));
+                    s = points[t].s;
+                }
+                else
+                    ctx.lineTo(...zoomXY(points[t].x, points[t].y, ctx));
             }
             ctx.stroke();
         }
@@ -198,7 +204,7 @@ const Frame = (props) => {
 
 
     return (
-        <span style={{display: "flex", position: "relative","justify-content": "center","align-items": "center"}}>
+        <span style={{display: "flex", position: "relative",justifyContent: "center",alignItems: "center"}}>
             <Loading visible={imageLoading} />
             <canvas className={"canvas " + props.className} ref={canvasRef} width="1000" height="1000" />       
         </span>

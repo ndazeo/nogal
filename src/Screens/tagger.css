@@ -24,6 +24,10 @@
   cursor: crosshair;
 }
 
+.cursor-jump {
+  cursor:  url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAAK0lEQVQ4jWNgwAPcXtf+d3td+x+fGrxg1AB6GQBTRC6m3ICBD4NRAyg3AAD/VaCNcYtSywAAAABJRU5ErkJggg==) 8 8, auto;
+}
+
 .cursor-delete {
   cursor: url('../res/delete.png') 8 8, auto;
 }
