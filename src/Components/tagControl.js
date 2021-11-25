@@ -19,7 +19,7 @@ const TagControl = (props) => {
 
     const handleTagChange = (tag) => (event) => {
         event.preventDefault();
-        setTag(tag);
+        setTag(currentTag => !currentTag || currentTag._id!==tag._id ? tag : null);
     };
 
     const doubt = useCallback((tag) => {
