@@ -7,7 +7,7 @@ const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
 
     const { setTag, currentTag, tags, serie, updateTags, toogleDoubt, serieTags, frame } = props;
-
+    console.log(serie);
     React.useEffect(() => {
         if (serie && serie.tags)
             setUsedTags(serie.tags.reduce(
@@ -68,6 +68,9 @@ const TagControl = (props) => {
 
     return (
         <div className="tag-control">
+            <p>
+                {serie.PatientName} - {serie.name}
+            </p>
             <p>
                 Frame: {props && isInt(props.frame) ? props.frame + 1 : 0} / {props && serie ? serie.shape.f : 0}
             </p>
