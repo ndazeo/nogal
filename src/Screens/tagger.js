@@ -221,7 +221,7 @@ const Tagger = (props) => {
             onSerieSelected={handleSerieSelected} />
         </TabPanel>
         <TabPanel>
-          <TagControl serie={serie} frame={frame} tags={tags}
+          <TagControl patient={patient} serie={serie} frame={frame} tags={tags}
             setTag={setCurrentTag} currentTag={currentTag} serieTags={serieTags}
             updateTags={setTags} toogleDoubt={toogleDoubt}
             />

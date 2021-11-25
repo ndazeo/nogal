@@ -6,7 +6,7 @@ const isInt = (value) => parseInt(value, 10) === value;
 const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
 
-    const { setTag, currentTag, tags, serie, updateTags, toogleDoubt, serieTags, frame } = props;
+    const { setTag, currentTag, tags, serie, updateTags, toogleDoubt, serieTags, frame, patient } = props;
     console.log(serie);
     React.useEffect(() => {
         if (serie && serie.tags)
@@ -69,7 +69,7 @@ const TagControl = (props) => {
     return (
         <div className="tag-control">
             <p>
-                {serie.PatientName} - {serie.name}
+                {patient.displayName} - {serie.name}
             </p>
             <p>
                 Frame: {props && isInt(props.frame) ? props.frame + 1 : 0} / {props && serie ? serie.shape.f : 0}
