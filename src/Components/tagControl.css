@@ -22,3 +22,16 @@
 .fa-yellow{
    color: #f0ad4e;
 }
+
+.tagsList ul li {
+   display: grid;
+   grid-template-columns: 1fr auto auto;
+}
+
+.tagsList ul li button {
+   justify-self: end;
+}
+
+.tagsList ul li a {
+   justify-self: start;
+}

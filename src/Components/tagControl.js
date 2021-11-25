@@ -76,6 +76,7 @@ const TagControl = (props) => {
                 <ul>
                     {tags && tags
                         .filter(tag => usedTags && usedTags.find(t => t === tag._id))
+                        .sort((a, b) => a.n.localeCompare(b.n))
                         .map(tagDOMElem)}
                 </ul>
             </div>
@@ -84,6 +85,7 @@ const TagControl = (props) => {
                 <ul>
                     {tags && tags
                         .filter(tag => !usedTags || !usedTags.find(t => t === tag._id))
+                        .sort((a, b) => a.n.localeCompare(b.n))
                         .map(tagDOMElem)}
                 </ul>
             </div>
