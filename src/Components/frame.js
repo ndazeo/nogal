@@ -14,7 +14,7 @@ const Frame = (props) => {
     const [pan, setPan] = useState(null)
     const {
         serie, serieTags, tagsDict, frame, api, currentTag,
-        onFrameMouseDown, onFrameMouseUp, onFrameMouseMove
+        onFrameMouseDown, onFrameMouseUp, onFrameMouseMove, onFrameMouseLeave
     } = props
 
     const zoomXY = useCallback( (x,y, ctx) => {
@@ -179,6 +179,10 @@ const Frame = (props) => {
         }else{
             onFrameMouseMove(...realXY(x, y))
         }
+    }, canvasRef.current)
+
+    useEventListener('mouseleave', (event) => {
+        onFrameMouseLeave()
     }, canvasRef.current)
 
     useEventListener('wheel', (event) => {

@@ -24,7 +24,7 @@ const apiFetch = (token, setToken) => async (url, params) => {
 
 const useAPI = (props) => {
     if(!props) return
-    const [token, setToken] = props
+    const [token, setToken] = props.token
     
     const fetch = apiFetch(token, setToken);
 

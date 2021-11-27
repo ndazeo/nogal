@@ -18,6 +18,7 @@ const Tagger = (props) => {
   const [tagJump, setTagJump] = useState(false);
   const [cursorClass, setCursorClass] = useState('');
   const [selectedTag, setSelectedTag] = useState(null);
+  const [loading, setLoading] = useState(0);
   const [serieTags, setSerieTags] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagsDict, setTagsDict] = useState({})
@@ -132,6 +133,7 @@ const Tagger = (props) => {
       api.updateTag(serie._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
       setSelectedTag(null);
     } else if (tagMode === "add" && currentTag) {
+      setLoading(loading => loading + 1);
       const tagElem = { 'x': x, 'y': y, 'f': frame, 'k': currentTag._id };
       if (currentTag.l) {
         const sameKind = serieTags
@@ -147,7 +149,10 @@ const Tagger = (props) => {
           tagElem['s'] = s;
         }
       }
-      api.addTag(serie._id, tagElem).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
+      api.addTag(serie._id, tagElem).then(({ status, result }) => {
+        if(status === 201) setSerieTags(result.tags)
+        setLoading(loading => loading - 1)
+      });
     }
   }
 
@@ -181,22 +186,30 @@ const Tagger = (props) => {
     }
   }
 
+  const onFrameMouseLeave = () => {
+    setTagMode("add");
+    setSelectedTag(null);
+  }
+
   useEffect(() => {
+    if(loading>0){
+      setCursorClass('cursor-loading');
+      return
+    }
     if (tagMode === "delete") {
       setCursorClass('cursor-delete');
     } else if (tagMode === "move") {
       setCursorClass('cursor-move');
     } else if (currentTag) {
-      console.log(tagJump);
       if(tagJump){
         setCursorClass('cursor-jump');
       } else {
         setCursorClass('cursor-add');
       }
     } else {
-      setCursorClass('cursor-default');
+      setCursorClass('cursor-grab');
     }
-  }, [currentTag, tagMode, tagJump]);
+  }, [currentTag, tagMode, tagJump,loading]);
 
   useEffect(() => {
     if (serie) {
@@ -232,6 +245,7 @@ const Tagger = (props) => {
         onFrameMouseDown={onFrameMouseDown}
         onFrameMouseUp={onFrameMouseUp}
         onFrameMouseMove={onFrameMouseMove}
+        onFrameMouseLeave={onFrameMouseLeave}
       />
       <Legend />
     </div>

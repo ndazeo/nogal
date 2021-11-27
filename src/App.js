@@ -8,8 +8,8 @@ import Nav from './Components/nav'
 
 function App() {
   const token = useToken()
-  const [ jwt, setToken ] = token 
-  const api = useAPI(token)
+  const [ jwt, setToken ] = token
+  const api = useAPI({token})
 
   return (
     <div className="App">
