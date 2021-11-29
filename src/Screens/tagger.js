@@ -32,7 +32,7 @@ const Tagger = (props) => {
     api.getTags().then(setTags);
   }, [api]);
 
-  useEventListener('keydown', (key) => {
+  useEventListener('keydown', async(key) => {
     if (!serie) return;
     if (key.key === 'ArrowRight' && frame < serie.shape.f - 1) {
       setFrame(frame + 1);
@@ -55,15 +55,17 @@ const Tagger = (props) => {
       setCurrentTag(null);
     }
     if (key.key.toUpperCase() === 'C' && frame > 0) {
-      api.deleteTag(serie._id, {f:frame}).then(({ status, result }) => {
-        if (status === 200) {
-          result.tags
-            .filter(tag => tag.f === frame-1)
-            .forEach(tag => // TODO: implement addMany
-              api.addTag(serie._id, {...tag, f: frame}).then(({ status, result }) => status === 201 && setSerieTags(result.tags))            
-            );
-        }
-      });
+      const { status, result } = await api.deleteTag(serie._id, {f:frame})
+      const delete_result = result
+      if (status === 200) {
+        const new_tags = delete_result.tags
+          .filter(tag => tag.f === frame-1)
+          .map(tag => ({ ...tag, f: frame }));
+    
+        const { status, result } = await api.addTag(serie._id, new_tags)
+        if(status === 201) 
+          setSerieTags(result.tags)
+      }
     }
     if (key.key.toUpperCase() === 'J') {
       setTagJump(tagJump => !tagJump);
