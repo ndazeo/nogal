@@ -29,10 +29,10 @@ const Login = (props) => {
     <div className="contenedor">
       <div className="loginForm">
 
-        <label for="email">User</label>
+        <label htmlFor="email">User</label>
         <input ref={user} onChange={clearError} type="text" placeholder="Ingresar Usuario" />
 
-        <label for="password">Password</label>
+        <label htmlFor="password">Password</label>
         <input ref={pass} onChange={clearError} type="password" placeholder="Ingresar contraseña" />
 
         <div className="form-group">
