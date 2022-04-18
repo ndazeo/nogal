@@ -22,6 +22,8 @@ const Legend = () => {
                 <p>Keep <span className="keyboardKey">Ctrl</span> pressed to delete.</p>
                 <p>Keep <span className="keyboardKey">Shift</span> pressed to drag.</p>
                 <p>Press <span className="keyboardKey">C</span> to copy previous frame tags.</p>
+                <p>Press <span className="keyboardKey">Y</span> to yank current frame tags to the buffer.</p>
+                <p>Press <span className="keyboardKey">P</span> to replace current frame tags with the buffer.</p>
                 <p><span className="keyboardKey"><i className="fa fa-arrow-right"></i></span> Next frame</p>
                 <p><span className="keyboardKey"><i className="fa fa-arrow-left"></i></span> Previous frame.</p>
             </div>

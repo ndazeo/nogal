@@ -20,6 +20,7 @@ const Tagger = (props) => {
   const [selectedTag, setSelectedTag] = useState(null);
   const [loading, setLoading] = useState(0);
   const [serieTags, setSerieTags] = useState([]);
+  const [yankTags, setYankTags] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagsDict, setTagsDict] = useState({})
   const { api } = props
@@ -62,6 +63,20 @@ const Tagger = (props) => {
           .filter(tag => tag.f === frame-1)
           .map(tag => ({ ...tag, f: frame }));
     
+        const { status, result } = await api.addTag(serie._id, new_tags)
+        if(status === 201) 
+          setSerieTags(result.tags)
+      }
+    }
+    if (key.key.toUpperCase() === 'Y') {
+      setYankTags(serieTags.filter(tag => tag.f === frame));
+    }
+    if (key.key.toUpperCase() === 'P') {
+      const { status } = await api.deleteTag(serie._id, {f:frame})
+      if (status === 200 || status === 404) {
+        const new_tags = yankTags
+          .map(tag => ({ ...tag, f: frame }));
+
         const { status, result } = await api.addTag(serie._id, new_tags)
         if(status === 201) 
           setSerieTags(result.tags)
