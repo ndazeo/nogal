@@ -1,5 +1,13 @@
+cache:
+  paths:
+  - node_modules/
+  
+stages:
+  - build
+  - deploy
+
 .ssh-task:
-  image: node:16
+  image: jtwee/alpine-rsync-bash
   before_script:
     #- 'which ssh-agent || (  apk add --no-cache openssh-client)'
     # need to upgrade because of curl incompatibility
@@ -11,21 +19,21 @@
     - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
     - '[[ ! -z $SERVER_FQDN ]] && ssh-keyscan $SERVER_FQDN >> ~/.ssh/known_hosts'
     
+build:
+  type: build
+  image: node:16
+  script:
+  - npm i
+  - npm run build
 
 deploy:
   type: deploy
   extends: .ssh-task
   variables:
     SERVER_FQDN: 192.168.7.161
-  when: manual
   script:
-    - npm i
-    - npm run build
-    - echo "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
-    - rsync -ra -e ssh --delete build/ $DEPLOY_USER@$SERVER_FQDN:/home/web-client/public
+  - echo "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
+  - rsync -ra -e ssh --delete build/ $DEPLOY_USER@$SERVER_FQDN:/home/web-client/public
   only:
-    - main
+  - main
 
-cache:
-  paths:
-  - node_modules/
