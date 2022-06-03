@@ -1,5 +1,5 @@
 .ssh-task:
-  image: node
+  image: node:16
   before_script:
     #- 'which ssh-agent || (  apk add --no-cache openssh-client)'
     # need to upgrade because of curl incompatibility
