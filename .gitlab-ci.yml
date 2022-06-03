@@ -1,9 +1,28 @@
+.ssh-task:
+  image: node
+  before_script:
+    #- 'which ssh-agent || (  apk add --no-cache openssh-client)'
+    # need to upgrade because of curl incompatibility
+    #- 'which curl || ( apk upgrade && apk add --no-cache curl)'
+    #- 'which git || (  apk add --no-cache git)'
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - eval $(ssh-agent -s)
+    - '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+    - '[[ ! -z $SERVER_FQDN ]] && ssh-keyscan $SERVER_FQDN >> ~/.ssh/known_hosts'
+    
+
 deploy:
   type: deploy
+  extends: .ssh-task
+  variables:
+    SERVER_FQDN: 192.168.7.161
+  when: manual
   script:
     - npm i
     - npm run build
-    - cp ./build/* -r /deep/ndazeo/nogal/public/
+    - echo "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
+    - rsync -ra -e ssh --delete build/ $DEPLOY_USER@$SERVER_FQDN:/home/web-client/public
   only:
     - main
 
