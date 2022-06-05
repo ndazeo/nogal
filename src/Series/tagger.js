@@ -1,15 +1,15 @@
 import { useState, useEffect } from 'react';
 import useEventListener from '@use-it/event-listener'
-import Frame from '../Components/frame';
-import Select from '../Components/select';
-import TagControl from '../Components/tagControl';
-import Legend from '../Components/legend';
+import Frame from './Components/frame';
+import Select from './Components/select';
+import TagControl from './Components/tagControl';
+import Legend from './Components/legend';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 import './tagger.css';
 
 
-const Tagger = (props) => {
+const SeriesTagger = (props) => {
   const [patient, setPatient] = useState(null);
   const [serie, setSerie] = useState(null);
   const [frame, setFrame] = useState(null);
@@ -269,4 +269,4 @@ const Tagger = (props) => {
   );
 }
 
-export default Tagger;
+export default SeriesTagger;

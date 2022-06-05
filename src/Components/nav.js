@@ -20,7 +20,7 @@ const Nav = (props) => {
         <div>
             <div className={"topnav" + (responsive? " responsive" : "")} >
                 {/* <a href="#home" className="active">Tag</a> */}
-                {onSignOut && <a href="#logout" onClick={signOut} className="bottom"><i className="fa fa-sign-out"></i></a>}
+                {onSignOut && <a href="#logout" onClick={signOut} className="bottom"><i className="fa-solid fa-right-from-bracket"></i></a>}
                 {/* <a href="javascript:void(0);" className="icon" onclick={toogle}>
                     <i className="fa fa-bars"></i>
                 </a> */}

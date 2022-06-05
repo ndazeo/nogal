@@ -32,6 +32,17 @@ const useAPI = (props) => {
         token: token,
         URL: URL,
 
+        getUser : async () => {
+            const response = await fetch(`${URL}auth/user`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const user = await response.json()
+            return user
+        },
+
         getFrame: async (fileid, f) => {
             const response = await fetch(`${URL}data/?id=${fileid}&f=${f}`, {
                 method: 'GET',

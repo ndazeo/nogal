@@ -1,6 +1,6 @@
 import React, { useRef, useEffect, useState, useCallback, useMemo } from 'react'
 import useEventListener from '@use-it/event-listener'
-import Loading from './loading'
+import Loading from '../../Components/loading'
 import './frame.css'
 
 
