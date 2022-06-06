@@ -7,23 +7,22 @@ import Loading from './Components/loading';
 
 import Login from './Login/Login'
 const SeriesTagger = React.lazy(() => import('./Series/tagger.js'));
+const AdminConsole = React.lazy(() => import('./Admin/console.js'));
 
 
 function App() {
   const token = useToken()
   const [user, setUser] = useState(null)
   const [jwt, setToken] = token
-  const api = useAPI({ token })
+  const api = useAPI({ token, db:'test' })
   
   useEffect(() => {
     if (!jwt){
       setUser(null);
       return;
-    } 
-    
+    }
     api.getUser().then(user => setUser(user))
-    
-  }, [jwt, api])
+  }, [jwt])
   
   return (
     <div className="App">
@@ -31,7 +30,7 @@ function App() {
       <Suspense fallback={<Loading visible="true"></Loading>}>
       {user && user.home ?
           {
-            'admin': <SeriesTagger  api={api} />,
+            'admin': <AdminConsole  api={api} />,
             'series': <SeriesTagger api={api} />,
           }[user.home]
         :

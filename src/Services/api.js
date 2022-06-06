@@ -25,13 +25,25 @@ const apiFetch = (token, setToken) => async (url, params) => {
 const useAPI = (props) => {
     if(!props) return
     const [token, setToken] = props.token
+    const { db } = props.db
     
     const fetch = apiFetch(token, setToken);
 
     return {
         token: token,
         URL: URL,
-
+        
+        getUsers : async () => {
+            const response = await fetch(`${URL}users`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const data = await response.json()
+            return data
+        },
+        
         getUser : async () => {
             const response = await fetch(`${URL}auth/user`, {
                 method: 'GET',
@@ -44,7 +56,7 @@ const useAPI = (props) => {
         },
 
         getFrame: async (fileid, f) => {
-            const response = await fetch(`${URL}data/?id=${fileid}&f=${f}`, {
+            const response = await fetch(`${URL}/db/${db}/data/?id=${fileid}&f=${f}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -54,7 +66,7 @@ const useAPI = (props) => {
             return blob
         },
     getPatients: async () => {
-            const response = await fetch(`${URL}patients`, {
+            const response = await fetch(`${URL}/db/${db}/patients`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -64,7 +76,7 @@ const useAPI = (props) => {
             return data
         },
     getPatient: async (id) => {
-            const response = await fetch(`${URL}patients/${id}`, {
+            const response = await fetch(`${URL}/db/${db}/patients/${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -74,7 +86,7 @@ const useAPI = (props) => {
             return data
         },
     getSerie: async (id) => {
-            const response = await fetch(`${URL}series/${id}`, {
+            const response = await fetch(`${URL}/db/${db}/series/${id}`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -84,7 +96,7 @@ const useAPI = (props) => {
             return data
         },
     getTags: async () => {
-            const response = await fetch(`${URL}tags`, {
+            const response = await fetch(`${URL}/db/${db}/tags`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -94,7 +106,7 @@ const useAPI = (props) => {
             return data
         },
     addTag: async (id, tag) => {
-            const response = await fetch(`${URL}series/${id}/tags`, {
+            const response = await fetch(`${URL}/db/${db}/series/${id}/tags`, {
                 method: 'POST',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -106,7 +118,7 @@ const useAPI = (props) => {
             return { 'status': response.status, 'result': data }
         },
     updateTag: async (id, i, tag) => {
-            const response = await fetch(`${URL}series/${id}/tags/${i}`, {
+            const response = await fetch(`${URL}/db/${db}/series/${id}/tags/${i}`, {
                 method: 'PUT',
                 headers: {
                     'Authorization': `Bearer ${token}`,
@@ -118,7 +130,7 @@ const useAPI = (props) => {
             return { 'status': response.status, 'result': data }
         },
     deleteTag: async (id, {x, y, f, k} = {}) => {
-            let url = `${URL}series/${id}/tags?`
+            let url = `${URL}/db/${db}/series/${id}/tags?`
             if(x!==undefined) url += `x=${x}&`
             if(y!==undefined) url += `y=${y}&`
             if(f!==undefined) url += `f=${f}&`
