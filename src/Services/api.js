@@ -1,3 +1,5 @@
+import { useState } from 'react'
+
 const URL = process.env.REACT_APP_API_URL
 
 
@@ -23,18 +25,27 @@ const apiFetch = (token, setToken) => async (url, params) => {
     
 
 const useAPI = (props) => {
-    if(!props) return
     const [token, setToken] = props.token
     const { db } = props.db
-    
     const fetch = apiFetch(token, setToken);
 
-    return {
+    const [api] = useState({
         token: token,
         URL: URL,
         
         getUsers : async () => {
             const response = await fetch(`${URL}users`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const data = await response.json()
+            return data
+        },
+
+        getGroups : async () => {
+            const response = await fetch(`${URL}groups`, {
                 method: 'GET',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -53,6 +64,32 @@ const useAPI = (props) => {
             })
             const user = await response.json()
             return user
+        },
+
+        addUser : async (user) => {
+            const response = await fetch(`${URL}users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(user)
+            })
+            const data = await response.json()
+            return data
+        },
+
+        addUpdate : async (user) => {
+            const response = await fetch(`${URL}users/${user._id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify(user)
+            })
+            const data = await response.json()
+            return data
         },
 
         getFrame: async (fileid, f) => {
@@ -145,7 +182,9 @@ const useAPI = (props) => {
             const data = await response.json()
             return { 'status': response.status, 'result': data }
         }
-    }
+    })
+
+    return api;
 }
 
 

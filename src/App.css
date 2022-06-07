@@ -1,6 +1,6 @@
 .App {
   text-align: center;
-  background-color: #282c34;
+  background-color: var(--nogal-background-color);
   height: 100vh;
   width: 100vw;
   font-size: calc(10px + 2vmin);

@@ -20,9 +20,9 @@ function App() {
     if (!jwt){
       setUser(null);
       return;
-    }
+    } 
     api.getUser().then(user => setUser(user))
-  }, [jwt])
+  }, [jwt, api])
   
   return (
     <div className="App">
