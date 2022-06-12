@@ -1,19 +1,18 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useContext } from 'react';
 import './login.css';
 import base64 from 'react-native-base64';
-import { login } from '../Services/api'
+import { APIContext } from '../Services/api'
 
 const Login = (props) => {
+  const { api } = useContext(APIContext);
   const [error, setError] = useState(false);
   const user = useRef(null);
   const pass = useRef(null);
-  const [, setToken] = props.token
-
-
+  
   const loginHandler = async () => {
     const userData = 'Basic ' + base64.encode(user.current.value + ":" + pass.current.value);
-    let token = await login(userData);
-    setToken(token)
+    let token = await api.login(userData);
+    api.update({token: token})
     if (!token) {
       setError(true);
     } else {

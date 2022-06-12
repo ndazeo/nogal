@@ -1,0 +1,55 @@
+.helpicon {
+    color: #000;
+    background-color: #fff;
+    width: 1.3em;
+    height: 1.3em;
+    display: inline-block;
+    border-radius: 100%;
+    text-align: center;
+    text-decoration: none;
+    margin-right: 0.1em;
+    margin-top: 0.2em;
+    -webkit-box-shadow: inset -1px -1px 1px 0px rgba(0, 0, 0, 0.25);
+    -moz-box-shadow: inset -1px -1px 1px 0px rgba(0, 0, 0, 0.25);
+    box-shadow: inset -1px -1px 1px 0px rgba(0, 0, 0, 0.25);
+}
+
+.keyboardKey {
+    border-radius: 10%;
+    border: 1px solid white;
+    padding-left: .1em;
+    padding-right: .1em;
+    -webkit-box-shadow: black .1em .1em .1em;
+    -moz-box-shadow: black .1em .1em .1em;
+    box-shadow: black .1em .1em .1em;
+}
+
+.helpicon:hover{
+    background-color: gray;
+    cursor: pointer;
+}
+
+.legend-frame {
+    position: absolute;
+    margin-left: auto; 
+    margin-right: auto; 
+    z-index: 99999;
+    /* left: 0; */
+    right: 0;
+    /* width: 70%; */
+    border: whitesmoke solid 1px;
+    background-color: #282c34;
+    border-radius: 1em;
+    -webkit-box-shadow: black 1em 1em 1em;
+    -moz-box-shadow: black 1em 1em 1em;
+    box-shadow: black 1em 1em 1em;
+}
+
+.legend-frame p {
+    text-align: left;
+    /* margin-left: 3em; */
+}
+
+.hidden {
+    display: none;
+}

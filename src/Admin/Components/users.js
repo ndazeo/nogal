@@ -1,11 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import './users.css'
-
+import { useEffect, useState, useContext } from 'react';
+import { APIContext } from '../../Services/api';
 import Loading from '../../Components/loading';
 import User from './user';
 
 const Users = (props) => {
-    const { api } = props
+    const { api } = useContext(APIContext)
     const [users, setUsers] = useState([]);
     const [userid, setUserId] = useState(null);
     const [user, setUser] = useState(null);

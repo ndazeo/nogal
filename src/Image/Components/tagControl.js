@@ -1,21 +1,18 @@
 import React, { useState, useCallback } from "react";
 import './tagControl.css'
 
-const isInt = (value) => parseInt(value, 10) === value;
-
 const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
-
-    const { setTag, currentTag, tags, serie, updateSeriesTags, toogleDoubt, serieTags, frame, patient } = props;
-    console.log(serie);
+    const { setTag, currentTag, tags, updateSeriesTags, toogleDoubt, serieTags, selectedImage } = props;
+    
     React.useEffect(() => {
-        if (serie && serie.tags)
-            setUsedTags(serie.tags.reduce(
+        if (selectedImage && selectedImage.tags)
+            setUsedTags(selectedImage.tags.reduce(
                 (r, i) => !r.find(e => e === i.k) ? [i.k, ...r] : r, []
             ));
         else
             setUsedTags([]);
-    }, [serie]);
+    }, [selectedImage]);
 
     const handleTagChange = (tag) => (event) => {
         event.preventDefault();
@@ -25,10 +22,9 @@ const TagControl = (props) => {
     const doubt = useCallback((tag) => {
         return serieTags 
         && serieTags.find(e => 
-                e.k === tag._id && e.f === frame
+                e.k === tag._id
                 && e.x === -1 && e.y === -1)
-        
-    }, [serieTags, frame])
+    }, [serieTags])
 
     const toogleHide = (tag) => (event) => {
         if(tag.hidden)
@@ -38,8 +34,9 @@ const TagControl = (props) => {
         updateSeriesTags(tags => tags.map(t => t._id === tag._id ? tag : t));
     }
 
-    if (!serie)
-        return (<div>Select a serie to start</div>);
+
+    if (!selectedImage)
+        return (<div>Select an image to start</div>);
 
     const tagDOMElem = (tag) => (
         <li key={tag._id} className={currentTag && currentTag._id === tag._id ? "selectedSerie" : null}>
@@ -69,10 +66,7 @@ const TagControl = (props) => {
     return (
         <div className="tag-control">
             <p>
-                {patient.displayName} - {serie.name}
-            </p>
-            <p>
-                Frame: {props && isInt(props.frame) ? props.frame + 1 : 0} / {props && serie ? serie.shape.f : 0}
+                {selectedImage && selectedImage.name}
             </p>
             <p>Existing tags:</p>
             <div className="tagsList">

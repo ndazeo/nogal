@@ -1,20 +1,29 @@
-import { BrowserRouter as Router, Routes, Route, NavLink } from "react-router-dom";
-import Nav from "../Components/nav.js";
+import { Routes, Route, NavLink } from "react-router-dom";
+import { DBSelect } from "./Components/dbselect.js";
 import Users from './Components/users.js'
+import Files from './Components/files.js'
+import Tags from './Components/tags.js'
+
+import './console.css'
 
 const AdminConsole = (props) => {
-    const { api } = props
 
     return (
         <div>
-            <Nav>
-                <NavLink to="users">Users</NavLink>
-            </Nav>
-            <Router>
-                <Routes>
-                    <Route path="/" element={<Users api={api} />} />
-                </Routes>
-            </Router>
+            <nav className="console_nav">
+                <li>
+                    <NavLink to="users">Users</NavLink>
+                    <NavLink to="files">Files</NavLink>
+                    <NavLink to="tags">Tags</NavLink>
+                </li>
+                <DBSelect></DBSelect>
+            </nav>
+            <Routes>
+                <Route path="/" element={<div></div>} />
+                <Route path="/users" element={<Users />} />
+                <Route path="/files" element={<Files />} />
+                <Route path="/tags" element={<Tags />} />
+            </Routes>
         </div>
     )
 }

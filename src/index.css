@@ -15,3 +15,8 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.nogal-btn{
+  background: var(--nogal-background-color);
+  cursor: pointer;
+}

@@ -1,17 +1,16 @@
 import { useEffect, useRef, useState } from 'react';
 
 
-const User = (props) => {
-    const { api, user, onClose, setUser } = props
+const File = (props) => {
+    const { api, file, onClose, setFile } = props
     const [groups, setGroups] = useState([]);
     const name = useRef();
-    const pass = useRef();
+    const path = useRef();
 
-    
     useEffect(() => {
-        name.current.value = user.name
-        pass.current.value = user.password
-    }, [user])
+        name.current.value = file.name
+        path.current.value = file.path
+    }, [file])
 
     useEffect(() => {
         api.getGroups().then(groups => setGroups(groups))
@@ -19,25 +18,25 @@ const User = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        user.name = name.current.value;
-        user.password = pass.current.value;
-        if(user._id){
-            api.updateUser(user).then(() => onClose())
+        file.name = name.current.value;
+        file.path = path.current.value;
+        if(file._id){
+            api.updateFile(file).then(() => onClose())
         }else{
-            api.addUser(user).then(() => onClose())
+            api.addFile(file).then(() => onClose())
         }
     }
 
     const handleGroupAdd = (event) => {
         event.preventDefault();
-        user.groups.push(event.target.dataset.id);
-        setUser({...user})
+        file.groups.push(event.target.dataset.id);
+        setFile({...file})
     }
 
     const handleGroupRemove = (event) => {
         event.preventDefault();
-        user.groups = user.groups.filter((g) => g !== event.target.dataset.id);
-        setUser({...user})
+        file.groups = file.groups.filter((g) => g !== event.target.dataset.id);
+        setFile({...file})
     }
 
     return (
@@ -49,14 +48,14 @@ const User = (props) => {
                     <input type="text" ref={name} />
                 </p>
                 <p>
-                    <label>Password: </label>
-                    <input type="password" ref={pass} />
+                    <label>Path: </label>
+                    <input type="text" ref={path} />
                 </p>
                 <p>
                 <label>In groups:</label>
                 <ul>
                     { groups && groups
-                        .filter(group => user.groups.includes(group._id))
+                        .filter(group => file.groups.includes(group._id))
                         .map(group =>
                             <li key={group._id}>{group.name} &nbsp;
                             <i onClick={handleGroupRemove} data-id={group._id} className='fa-solid fa-minus nogal-btn'></i></li>
@@ -68,17 +67,13 @@ const User = (props) => {
                 <label>Available groups:</label>
                 <ul>
                     { groups && groups 
-                        .filter(group => !user.groups.includes(group._id))
+                        .filter(group => !file.groups.includes(group._id))
                         .map(group =>
                             <li key={group._id}>{group.name} &nbsp;
                             <i onClick={handleGroupAdd} data-id={group._id} className='fa-solid fa-plus nogal-btn'></i></li>
                         )
                     }
                 </ul>
-                </p>
-                <p>
-                    <label>Scope: </label>
-                    {user.scope.join(",")}
                 </p>
                 <p>
                     <button type="submit">Save</button>
@@ -88,4 +83,4 @@ const User = (props) => {
     )
 }
 
-export default User;
+export default File;

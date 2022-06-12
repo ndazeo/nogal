@@ -1,6 +1,6 @@
 methods = {
-        'getFrame': async (URL, token, fileid, f) => {
-        const response = await fetch(`${URL}data/?id=${fileid}&f=${f}`, {
+        'getFrame': async (URL, db, token, fileid, f) => {
+        const response = await fetch(`${URL}/db/${db}/data/?id=${fileid}&f=${f}`, {
             method: 'GET',
             headers: {
                 'Authorization': `Bearer ${token}`

@@ -1,5 +1,6 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useContext } from 'react';
 import useEventListener from '@use-it/event-listener'
+import { APIContext } from '../Services/api';
 import Frame from './Components/frame';
 import Select from './Components/select';
 import TagControl from './Components/tagControl';
@@ -23,7 +24,7 @@ const SeriesTagger = (props) => {
   const [yankTags, setYankTags] = useState([]);
   const [tags, setTags] = useState([]);
   const [tagsDict, setTagsDict] = useState({})
-  const { api } = props
+  const { api } = useContext(APIContext)
   
   useEffect(() => {
       if (tags) setTagsDict(tags.reduce((acc, tag) => ({ [tag._id]: tag, ...acc }), {}))
@@ -56,14 +57,14 @@ const SeriesTagger = (props) => {
       setCurrentTag(null);
     }
     if (key.key.toUpperCase() === 'C' && frame > 0) {
-      const { status, result } = await api.deleteTag(serie._id, {f:frame})
+      const { status, result } = await api.deleteSeriesTag(serie._id, {f:frame})
       const delete_result = result
       if (status === 200) {
         const new_tags = delete_result.tags
           .filter(tag => tag.f === frame-1)
           .map(tag => ({ ...tag, f: frame }));
     
-        const { status, result } = await api.addTag(serie._id, new_tags)
+        const { status, result } = await api.addSeriesTag(serie._id, new_tags)
         if(status === 201) 
           setSerieTags(result.tags)
       }
@@ -72,12 +73,12 @@ const SeriesTagger = (props) => {
       setYankTags(serieTags.filter(tag => tag.f === frame));
     }
     if (key.key.toUpperCase() === 'P') {
-      const { status } = await api.deleteTag(serie._id, {f:frame})
+      const { status } = await api.deleteSeriesTag(serie._id, {f:frame})
       if (status === 200 || status === 404) {
         const new_tags = yankTags
           .map(tag => ({ ...tag, f: frame }));
 
-        const { status, result } = await api.addTag(serie._id, new_tags)
+        const { status, result } = await api.addSeriesTag(serie._id, new_tags)
         if(status === 201) 
           setSerieTags(result.tags)
       }
@@ -142,12 +143,12 @@ const SeriesTagger = (props) => {
         x - 0.005 < t.x && t.x < x + 0.005 && 
         y - 0.005 < t.y && t.y < y + 0.005 && 
         t.f === frame && !tagsDict[t.k].hidden);
-      if(tag) api.deleteTag(serie._id, {x:x, y:y, f:frame, k:tag.k}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+      if(tag) api.deleteSeriesTag(serie._id, {x:x, y:y, f:frame, k:tag.k}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
     } else if (tagMode === "move" && selectedTag !== null) {
       const tagElem = serieTags[selectedTag]
       tagElem['x'] = x
       tagElem['y'] = y
-      api.updateTag(serie._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+      api.updateSeriesTag(serie._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
       setSelectedTag(null);
     } else if (tagMode === "add" && currentTag) {
       setLoading(loading => loading + 1);
@@ -166,7 +167,7 @@ const SeriesTagger = (props) => {
           tagElem['s'] = s;
         }
       }
-      api.addTag(serie._id, tagElem).then(({ status, result }) => {
+      api.addSeriesTag(serie._id, tagElem).then(({ status, result }) => {
         if(status === 201) setSerieTags(result.tags)
         setLoading(loading => loading - 1)
       });
@@ -189,9 +190,9 @@ const SeriesTagger = (props) => {
       t.x === -1 && t.y === -1 && 
       t.k === _tag._id && t.f === frame);
     if(tag)
-      api.deleteTag(serie._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+      api.deleteSeriesTag(serie._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
     else
-      api.addTag(serie._id, {'x':-1, 'y':-1, 'f':frame, 'k':_tag._id}).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
+      api.addSeriesTag(serie._id, {'x':-1, 'y':-1, 'f':frame, 'k':_tag._id}).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
   }
 
   const onFrameMouseMove = (x, y) => {
@@ -253,7 +254,7 @@ const SeriesTagger = (props) => {
         <TabPanel>
           <TagControl patient={patient} serie={serie} frame={frame} tags={tags}
             setTag={setCurrentTag} currentTag={currentTag} serieTags={serieTags}
-            updateTags={setTags} toogleDoubt={toogleDoubt}
+            updateSeriesTags={setTags} toogleDoubt={toogleDoubt}
             />
         </TabPanel>
       </Tabs>

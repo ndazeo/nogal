@@ -1,17 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 
 
-const User = (props) => {
-    const { api, user, onClose, setUser } = props
+const Tag = (props) => {
+    const { api, tag, onClose, setTag } = props
     const [groups, setGroups] = useState([]);
     const name = useRef();
-    const pass = useRef();
+    const [line, setLine] = useState(tag.l);
+    const color = useRef();
 
-    
     useEffect(() => {
-        name.current.value = user.name
-        pass.current.value = user.password
-    }, [user])
+        name.current.value = tag.n
+        color.current.value = tag.c
+    }, [tag])
 
     useEffect(() => {
         api.getGroups().then(groups => setGroups(groups))
@@ -19,25 +19,30 @@ const User = (props) => {
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        user.name = name.current.value;
-        user.password = pass.current.value;
-        if(user._id){
-            api.updateUser(user).then(() => onClose())
+        tag.n = name.current.value;
+        tag.l = line;
+        tag.c = color.current.value;
+        if(tag._id){
+            api.updateTag(tag).then(() => onClose())
         }else{
-            api.addUser(user).then(() => onClose())
+            api.addTag(tag).then(() => onClose())
         }
     }
 
     const handleGroupAdd = (event) => {
         event.preventDefault();
-        user.groups.push(event.target.dataset.id);
-        setUser({...user})
+        tag.groups.push(event.target.dataset.id);
+        setTag({...tag})
     }
 
     const handleGroupRemove = (event) => {
         event.preventDefault();
-        user.groups = user.groups.filter((g) => g !== event.target.dataset.id);
-        setUser({...user})
+        tag.groups = tag.groups.filter((g) => g !== event.target.dataset.id);
+        setTag({...tag})
+    }
+
+    const handleLineChange = (event) => {
+        setLine(parseInt(event.target.value));
     }
 
     return (
@@ -49,14 +54,27 @@ const User = (props) => {
                     <input type="text" ref={name} />
                 </p>
                 <p>
-                    <label>Password: </label>
-                    <input type="password" ref={pass} />
+                    <label>Color: </label>
+                    <input type="text" ref={color} />
                 </p>
+                <div>
+                    <label>Is line: </label>
+                    <ul style={{listStyleType: "none", "padding": 0}}>
+                        <li>
+                            <input type="radio" name="line" value={1} checked={line===1} onChange={handleLineChange} />
+                            &nbsp; Yes
+                        </li>
+                        <li>
+                            <input type="radio" name="line" value={0} checked={line!==1} onChange={handleLineChange} />
+                            &nbsp; No
+                        </li>
+                    </ul>
+                </div>
                 <p>
                 <label>In groups:</label>
                 <ul>
                     { groups && groups
-                        .filter(group => user.groups.includes(group._id))
+                        .filter(group => tag.groups.includes(group._id))
                         .map(group =>
                             <li key={group._id}>{group.name} &nbsp;
                             <i onClick={handleGroupRemove} data-id={group._id} className='fa-solid fa-minus nogal-btn'></i></li>
@@ -68,17 +86,13 @@ const User = (props) => {
                 <label>Available groups:</label>
                 <ul>
                     { groups && groups 
-                        .filter(group => !user.groups.includes(group._id))
+                        .filter(group => !tag.groups.includes(group._id))
                         .map(group =>
                             <li key={group._id}>{group.name} &nbsp;
                             <i onClick={handleGroupAdd} data-id={group._id} className='fa-solid fa-plus nogal-btn'></i></li>
                         )
                     }
                 </ul>
-                </p>
-                <p>
-                    <label>Scope: </label>
-                    {user.scope.join(",")}
                 </p>
                 <p>
                     <button type="submit">Save</button>
@@ -88,4 +102,4 @@ const User = (props) => {
     )
 }
 
-export default User;
+export default Tag;

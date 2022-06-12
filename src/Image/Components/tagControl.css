@@ -1,0 +1,37 @@
+.tagsList ul {
+   list-style: none;
+}
+
+.tagsList a:link, .tagsList a:visited {
+   color: whitesmoke;
+   text-decoration: none;
+}
+
+.selectedTag {
+   text-decoration: underline;
+}
+
+.eyebutton {
+   margin-left: 0.5em;
+}
+
+.fa-gray{
+   color: #222;
+}
+
+.fa-yellow{
+   color: #f0ad4e;
+}
+
+.tagsList ul li {
+   display: grid;
+   grid-template-columns: 1fr auto auto;
+}
+
+.tagsList ul li button {
+   justify-self: end;
+}
+
+.tagsList ul li a {
+   justify-self: start;
+}
