@@ -33,7 +33,7 @@ const Users = (props) => {
     }
 
     const handleNewClick = (event) => {
-        setUser({groups:[], scope:["tag"]})
+        setUser({groups:[], scope:["tag"], home:"/imagetagger"})
     }
 
     return (
