@@ -3,7 +3,7 @@ import './tagControl.css'
 
 const TagControl = (props) => {
     const [usedTags, setUsedTags] = useState([]);
-    const { setTag, currentTag, tags, updateSeriesTags, toogleDoubt, serieTags, selectedImage } = props;
+    const { setTag, currentTag, tags, updateSeriesTags, toogleDoubt, elementTags, selectedImage } = props;
     
     React.useEffect(() => {
         if (selectedImage && selectedImage.tags)
@@ -20,11 +20,11 @@ const TagControl = (props) => {
     };
 
     const doubt = useCallback((tag) => {
-        return serieTags 
-        && serieTags.find(e => 
+        return elementTags 
+        && elementTags.find(e => 
                 e.k === tag._id
                 && e.x === -1 && e.y === -1)
-    }, [serieTags])
+    }, [elementTags])
 
     const toogleHide = (tag) => (event) => {
         if(tag.hidden)

@@ -12,7 +12,7 @@ const Frame = (props) => {
     const [frameWindow, setFrameWindow] = useState({left:0,top:0,zoom:1})
     const [pan, setPan] = useState(null)
     const {
-        selectedImage, serieTags, tagsDict, api, currentTag,
+        selectedImage, elementTags, tagsDict, api, currentTag,
         onFrameMouseDown, onFrameMouseUp, onFrameMouseMove, onFrameMouseLeave
     } = props
 
@@ -100,12 +100,12 @@ const Frame = (props) => {
         const canvas = canvasRef.current;
         const ctx = canvas.getContext('2d');
         ctx.clearRect(0, 0, ctx.canvas.width, ctx.canvas.height)
-        if (!serieTags || !image || !image.image) return
+        if (!elementTags || !image || !image.image) return
         let {left,top,zoom} = frameWindow
         left = left * ctx.canvas.width
         top = top * ctx.canvas.height
         ctx.drawImage(image.image, -left/zoom, -top/zoom, (ctx.canvas.width)/zoom, (ctx.canvas.height)/zoom)
-        const ftags = serieTags.filter(tag => tag.x >= 0)
+        const ftags = elementTags.filter(tag => tag.x >= 0)
         const availTags = ftags.reduce((acc, tag) => ({ ...acc, [tag.k]: tagsDict[tag.k] }), {})
         Object.entries(availTags).forEach(([key, kind],) => {
             if(kind.hidden) return;
@@ -117,7 +117,7 @@ const Frame = (props) => {
                 ktags.forEach(tag => drawMarker(ctx, tag.x, tag.y, color))
             }
         })
-    }, [image, canvasRef, drawMarker, drawLine, serieTags, tagsDict, currentTag, frameWindow])
+    }, [image, canvasRef, drawMarker, drawLine, elementTags, tagsDict, currentTag, frameWindow])
 
     useEventListener('mouseup', (event) => {
         const canvas = canvasRef.current

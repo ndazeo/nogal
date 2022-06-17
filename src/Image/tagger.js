@@ -18,7 +18,7 @@ const ImageTagger = (props) => {
     const [cursorClass, setCursorClass] = useState('');
     const [selectedTag, setSelectedTag] = useState(null);
     const [loading, setLoading] = useState(0);
-    const [serieTags, setSerieTags] = useState([]);
+    const [elementTags, setElementTags] = useState([]);
     const [tags, setTags] = useState([]);
     const [tagsDict, setTagsDict] = useState({})
     const { api } = useContext(APIContext)
@@ -98,22 +98,22 @@ const ImageTagger = (props) => {
   
     const onFrameMouseUp = (x, y) => {
       if (tagMode === "delete") {
-        const tag = serieTags.find(t => 
+        const tag = elementTags.find(t => 
           x - 0.005 < t.x && t.x < x + 0.005 && 
           y - 0.005 < t.y && t.y < y + 0.005 && 
           !tagsDict[t.k].hidden);
-        if(tag) api.deleteSeriesTag(selectedImage._id, {x:x, y:y, k:tag.k}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+        if(tag) api.deleteSeriesTag(selectedImage._id, {x:x, y:y, k:tag.k}).then(({ status, result }) => status === 200 && setElementTags(result.tags));
       } else if (tagMode === "move" && selectedTag !== null) {
-        const tagElem = serieTags[selectedTag]
+        const tagElem = elementTags[selectedTag]
         tagElem['x'] = x
         tagElem['y'] = y
-        api.updateSeriesTag(selectedImage._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+        api.updateSeriesTag(selectedImage._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setElementTags(result.tags));
         setSelectedTag(null);
       } else if (tagMode === "add" && currentTag) {
         setLoading(loading => loading + 1);
         const tagElem = { 'x': x, 'y': y, 'k': currentTag._id };
         if (currentTag.l) {
-          const sameKind = serieTags
+          const sameKind = elementTags
             .filter(t => t.k === currentTag._id && t.x >= 0)
             .sort((a, b) => a.i - b.i);
           if (tagJump && sameKind.length){
@@ -127,7 +127,7 @@ const ImageTagger = (props) => {
           }
         }
         api.addSeriesTag(selectedImage._id, tagElem).then(({ status, result }) => {
-          if(status === 201) setSerieTags(result.tags)
+          if(status === 201) setElementTags(result.tags)
           setLoading(loading => loading - 1)
         });
       }
@@ -135,7 +135,7 @@ const ImageTagger = (props) => {
   
     const onFrameMouseDown = (x, y) => {
       if (tagMode === "move") {
-        const i = serieTags.findIndex(t => 
+        const i = elementTags.findIndex(t => 
             x - 0.005 < t.x && t.x < x + 0.005 && 
             y - 0.005 < t.y && t.y < y + 0.005 && 
             !tagsDict[t.k].hidden);
@@ -145,21 +145,21 @@ const ImageTagger = (props) => {
     }
   
     const toogleDoubt = (_tag) => () => {
-      const tag = serieTags.find(t => 
+      const tag = elementTags.find(t => 
         t.x === -1 && t.y === -1 && 
         t.k === _tag._id);
       if(tag)
-        api.deleteSeriesTag(selectedImage._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setSerieTags(result.tags));
+        api.deleteSeriesTag(selectedImage._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setElementTags(result.tags));
       else
-        api.addSeriesTag(selectedImage._id, {'x':-1, 'y':-1, 'k':_tag._id}).then(({ status, result }) => status === 201 && setSerieTags(result.tags));
+        api.addSeriesTag(selectedImage._id, {'x':-1, 'y':-1, 'k':_tag._id}).then(({ status, result }) => status === 201 && setElementTags(result.tags));
     }
   
     const onFrameMouseMove = (x, y) => {
       if (tagMode === "move" && selectedTag !== null) {
-        let t = serieTags[selectedTag]
+        let t = elementTags[selectedTag]
         t['x'] = x
         t['y'] = y
-        setSerieTags(serieTags => [...serieTags, selectedTag => t]);
+        setElementTags(elementTags => [...elementTags, selectedTag => t]);
       }
     }
   
@@ -190,7 +190,7 @@ const ImageTagger = (props) => {
   
     useEffect(() => {
       if (selectedImage) {
-        //setSerieTags(selectedImage.tags);
+        //setElementTags(selectedImage.tags);
       }
     }, [selectedImage]);
   
@@ -211,13 +211,13 @@ const ImageTagger = (props) => {
           </TabPanel>
           <TabPanel>
             <TagControl selectedImage={selectedImage} tags={tags}
-              setTag={setCurrentTag} currentTag={currentTag} serieTags={serieTags}
+              setTag={setCurrentTag} currentTag={currentTag} elementTags={elementTags}
               updateSeriesTags={setTags} toogleDoubt={toogleDoubt}
               />
           </TabPanel>
         </Tabs>
         <Frame className={"MainFrame " + cursorClass} tagsDict={tagsDict} currentTag={currentTag}
-          selectedImage={selectedImage} serieTags={serieTags} api={api}
+          selectedImage={selectedImage} elementTags={elementTags} api={api}
           onFrameMouseDown={onFrameMouseDown}
           onFrameMouseUp={onFrameMouseUp}
           onFrameMouseMove={onFrameMouseMove}

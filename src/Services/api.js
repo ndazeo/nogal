@@ -209,7 +209,62 @@ export const createAPI = (props) => {
             const data = await response.json()
             return data
         },
+        
+        getElementTags: async (id) => {
+            const response = await fetch(`${URL}/db/${db}/element/${id}/elementtags`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            const data = await response.json()
+            return data
+        },
 
+        addElementTags: async (id, tag) => {
+            const response = await fetch(`${URL}/db/${db}/element/${id}/elementtags`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tag)
+            })
+            const data = await response.json()
+            return { 'status': response.status, 'result': data }
+        },
+
+        updateElementTags: async (id, i, tag) => {
+            const response = await fetch(`${URL}/db/${db}/element/${id}/elementtags/${i}`, {
+                method: 'PUT',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(tag)
+            })
+            const data = await response.json()
+            return { 'status': response.status, 'result': data }
+        },
+
+        deleteElementTags: async (id, { x, y, f, k } = {}) => {
+            let url = `${URL}/db/${db}/element/${id}/elementtags?`
+            if (x !== undefined) url += `x=${x}&`
+            if (y !== undefined) url += `y=${y}&`
+            if (f !== undefined) url += `f=${f}&`
+            if (k !== undefined) url += `k=${k}&`
+            const response = await fetch(url, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            })
+            const data = await response.json()
+            return { 'status': response.status, 'result': data }
+        },
+
+        /* deprecated */
         addSeriesTag: async (id, tag) => {
             const response = await fetch(`${URL}/db/${db}/series/${id}/tags`, {
                 method: 'POST',
