@@ -102,12 +102,12 @@ const ImageTagger = (props) => {
           x - 0.005 < t.x && t.x < x + 0.005 && 
           y - 0.005 < t.y && t.y < y + 0.005 && 
           !tagsDict[t.k].hidden);
-        if(tag) api.deleteSeriesTag(selectedImage._id, {x:x, y:y, k:tag.k}).then(({ status, result }) => status === 200 && setElementTags(result.tags));
+        if(tag) api.deleteElementTags(selectedImage._id, {x:x, y:y, k:tag.k}).then(({ status, result }) => status === 200 && setElementTags(result));
       } else if (tagMode === "move" && selectedTag !== null) {
         const tagElem = elementTags[selectedTag]
         tagElem['x'] = x
         tagElem['y'] = y
-        api.updateSeriesTag(selectedImage._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setElementTags(result.tags));
+        api.updateElementTags(selectedImage._id, selectedTag, tagElem).then(({ status, result }) => status === 200 && setElementTags(result));
         setSelectedTag(null);
       } else if (tagMode === "add" && currentTag) {
         setLoading(loading => loading + 1);
@@ -126,8 +126,8 @@ const ImageTagger = (props) => {
             tagElem['s'] = s;
           }
         }
-        api.addSeriesTag(selectedImage._id, tagElem).then(({ status, result }) => {
-          if(status === 201) setElementTags(result.tags)
+        api.addElementTags(selectedImage._id, tagElem).then(({ status, result }) => {
+          if(status === 201) setElementTags(result)
           setLoading(loading => loading - 1)
         });
       }
@@ -149,9 +149,9 @@ const ImageTagger = (props) => {
         t.x === -1 && t.y === -1 && 
         t.k === _tag._id);
       if(tag)
-        api.deleteSeriesTag(selectedImage._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setElementTags(result.tags));
+        api.deleteElementTags(selectedImage._id, {x:-1,y:-1}).then(({ status, result }) => status === 200 && setElementTags(result));
       else
-        api.addSeriesTag(selectedImage._id, {'x':-1, 'y':-1, 'k':_tag._id}).then(({ status, result }) => status === 201 && setElementTags(result.tags));
+        api.addElementTags(selectedImage._id, {'x':-1, 'y':-1, 'k':_tag._id}).then(({ status, result }) => status === 201 && setElementTags(result));
     }
   
     const onFrameMouseMove = (x, y) => {
@@ -188,11 +188,17 @@ const ImageTagger = (props) => {
       }
     }, [currentTag, tagMode, tagJump,loading]);
   
-    useEffect(() => {
+    useEffect( () => {
       if (selectedImage) {
-        //setElementTags(selectedImage.tags);
+        setLoading(loading => loading + 1);
+        api.getElementTags(selectedImage._id)
+          .then( (resultTags) => {
+            setElementTags(resultTags);
+            setLoading(loading => loading - 1);
+        })
+        
       }
-    }, [selectedImage]);
+    }, [api, selectedImage]);
   
     return (
       <div className="Tagger">
