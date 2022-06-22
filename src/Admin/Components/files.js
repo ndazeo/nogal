@@ -21,7 +21,7 @@ const Files = (props) => {
 
     useEffect(() => {
         api.getFiles().then(files => setFiles(files))
-    }, [])
+    }, [api])
 
 
     const handleFileSelect = (event) => {

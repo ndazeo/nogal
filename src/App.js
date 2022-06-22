@@ -1,6 +1,6 @@
 import './App.css';
 import React, { Suspense, useState, useEffect } from 'react';
-import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { APIContext, createAPI } from './Services/api';
 import useToken from './Services/useToken';
 import Nav from './Components/nav';
@@ -15,7 +15,6 @@ const ImageTagger = React.lazy(() => import('./Image/tagger.js'));
 function App() {
   const [token, saveToken] = useToken()
   const [user, setUser] = useState(null)
-  const navigate = useNavigate();
 
   const updateAPI = async (props) => {
     if (props.token !== undefined) saveToken(props.token)
@@ -29,7 +28,7 @@ function App() {
       let db = user.dbs[0]
       if (!user.dbs.includes(api.db)) api.update({db})
     }
-  }, [user, api])
+  }, [token, user, api])
 
   useEffect(() => {
     if(api.token)
