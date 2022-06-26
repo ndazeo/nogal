@@ -31,7 +31,7 @@ deploy:
   type: deploy
   extends: .ssh-task
   variables:
-    SERVER_FQDN: 192.168.7.161
+    SERVER_FQDN: $DEPLOY_SERVER
   script:
   - echo "$SSH_PRIVATE_KEY" | ssh-add - > /dev/null
   - rsync -ra -e ssh --delete build/ $DEPLOY_USER@$SERVER_FQDN:/home/web-client/public
