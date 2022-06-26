@@ -10,8 +10,19 @@ const apiFetch = (token, updateAPI) => async (url, params) => {
 
 
 export const createAPI = (props) => {
-    const { db, token, updateAPI } = props;
+    let { db, token, updateAPI } = props;
     const fetch = apiFetch(token, updateAPI);
+    
+    if(token!==undefined){
+        if (token)
+            localStorage.setItem('token', token);
+        else
+            localStorage.removeItem('token');
+    }else{
+        token = localStorage.getItem('token')
+    }
+
+    console.log("api", token);
 
     const api = {
         token: token,
