@@ -9,7 +9,8 @@ const Login = (props) => {
   const user = useRef(null);
   const pass = useRef(null);
   
-  const loginHandler = async () => {
+  const loginHandler = async (e) => {
+    e.preventDefault();
     const userData = 'Basic ' + base64.encode(user.current.value + ":" + pass.current.value);
     let token = await api.login(userData);
     api.update({token: token})
@@ -18,6 +19,7 @@ const Login = (props) => {
     } else {
       setError(false);
     }
+    return false;
   }
 
   const clearError = () => {
@@ -27,24 +29,25 @@ const Login = (props) => {
   return (
     <div className="contenedor">
       <div className="loginForm">
+        <form onSubmit={loginHandler}>
+          <label htmlFor="email">User</label>
+          <input ref={user} onChange={clearError} type="text" placeholder="Ingresar Usuario" />
 
-        <label htmlFor="email">User</label>
-        <input ref={user} onChange={clearError} type="text" placeholder="Ingresar Usuario" />
+          <label htmlFor="password">Password</label>
+          <input ref={pass} onChange={clearError} type="password" placeholder="Ingresar contraseña" />
 
-        <label htmlFor="password">Password</label>
-        <input ref={pass} onChange={clearError} type="password" placeholder="Ingresar contraseña" />
-
-        <div className="form-group">
-          <button onClick={loginHandler} >Login</button>
-          {
-            error ?
-              <div className="errorMsg">
-                <p>Wrong user or password!</p>
-              </div>
-              :
-              <div></div>
-          }
-        </div>
+          <div className="form-group">
+            <button type="submit" >Login</button>
+            {
+              error ?
+                <div className="errorMsg">
+                  <p>Wrong user or password!</p>
+                </div>
+                :
+                <div></div>
+            }
+          </div>
+        </form>
       </div>
     </div>
 
